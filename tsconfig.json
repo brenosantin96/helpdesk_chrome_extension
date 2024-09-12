@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+     "strict": true,
+     "module": "commonjs",
+     "target": "es6",
+     "esModuleInterop": true,
+     "sourceMap": true,
+     "rootDir": "src",
+     "outDir": "dist/js",
+     "noEmitOnError": true,
+     "typeRoots": [ "node_modules/@types" ]
+  },
+
+  "include": [
+    "src/background.ts",                 // Inclui arquivo de script TypeScript
+    "node_modules/chrome-types"  // Certifica os tipos de Chrome sejam incluídos
+  ]
+}
+

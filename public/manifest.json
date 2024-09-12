@@ -1,0 +1,16 @@
+{
+  "name": "HelpDesk MAR",
+  "description": "This extension is made to improve work of helpdesks technicians",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    
+  }
+}
