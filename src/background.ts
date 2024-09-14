@@ -1,4 +1,17 @@
-let active = false;
+import "../styles/styles.css"
+
+chrome.action.onClicked.addListener((tab : chrome.tabs.Tab) => {
+
+    if (tab.id && tab.url?.startsWith("http")) {
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['contentScript.js']
+        });
+    }
+});
+
+
+/* let active = false;
 
 function makeOrange(color: string): void {
     document.body.style.backgroundColor = color;
@@ -12,4 +25,4 @@ chrome.action.onClicked.addListener((tab : chrome.tabs.Tab) => {
         func: makeOrange,
         args: [color]
     }).then();
-});
+}); */

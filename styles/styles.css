@@ -1,0 +1,27 @@
+*{
+    box-sizing: border-box;
+}
+
+.big_square { 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 300px;
+    z-index: 9999999999;
+    background-color: red;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+.pokeButton {
+    margin: 10px;
+    padding: 10px;
+    background-color: darkcyan;
+    color: black;
+    border: 1px solid black;
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+}
