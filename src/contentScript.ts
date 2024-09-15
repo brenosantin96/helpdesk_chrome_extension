@@ -1,6 +1,5 @@
-import { consoleLogPokemon } from "./api";
-
 function toggleSquare(): void {
+
     const existingSquare = document.querySelector("#bigSquareID");
 
     if (existingSquare) {
@@ -19,7 +18,22 @@ function toggleSquare(): void {
         poke_button.classList.add("pokeButton");
         poke_button.innerHTML = "CONSULTAR POKEMONS"
         newDiv.appendChild(poke_button)
-        poke_button.onclick = consoleLogPokemon;
+
+        
+        poke_button.onclick = () => {
+            console.log("ENTROU NO poke_button.onclick")
+            chrome.runtime.sendMessage({action: "getPokemonData"}, (response) => {
+
+                console.log("reponse recebida", response)
+
+                if(response && response.success){
+                    console.log("Dados dos Pokémons:", response.data);
+                } else {
+                    console.log("Erro ao buscar dados dos Pokémons");
+
+                }
+            } )
+        }
     }
 }
 
