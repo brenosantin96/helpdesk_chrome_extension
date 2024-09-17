@@ -34,7 +34,8 @@ module.exports = {
       }),
       new CopyPlugin({
          patterns: [
-            { from: ".", to: ".", context: "public" }  // Copia o conteúdo da pasta public para dist
+            { from: ".", to: ".", context: "public" },  // Copia o conteúdo da pasta public para dist
+            { from: "src/side_extension.html", to: "side_extension.html" },  // Copia o conteúdo da pasta public para dist
          ]
       }),
    ],

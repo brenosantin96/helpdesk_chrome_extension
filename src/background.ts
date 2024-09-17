@@ -1,5 +1,4 @@
 //SERVICE WORKER PAGE
-import axios from "axios";
 import "../styles/styles.css"
 
 chrome.action.onClicked.addListener((tab: chrome.tabs.Tab) => {
@@ -11,6 +10,8 @@ chrome.action.onClicked.addListener((tab: chrome.tabs.Tab) => {
     }
 });
 
+
+/*
 // esse código será executado pelo sendMessage enviado desde o contentScript
 chrome.runtime.onMessage.addListener((request: any, sender: any, sendResponse: (response?: any) => void) => {
     console.log("ENTROU NO runtime.onMessage.addListener");
@@ -32,3 +33,5 @@ chrome.runtime.onMessage.addListener((request: any, sender: any, sendResponse: (
         return true;
     }
 });
+
+*/

@@ -1,3 +1,5 @@
+
+/*
 function toggleSquare(): void {
     const existingSquare = document.querySelector("#bigSquareID");
 
@@ -37,3 +39,84 @@ function toggleSquare(): void {
 
 // Chama a função para alternar a criação e remoção do quadrado
 toggleSquare();
+
+*/
+
+
+function toggleExtension() {
+
+    const existing_desk_container = document.querySelector("#desk-container");
+    
+    if (existing_desk_container) {
+        existing_desk_container.remove();
+        
+    } else {
+        fetch(chrome.runtime.getURL("side_extension.html"))
+            .then(response => {
+                console.log(response);
+                return response.text()})
+            .then(html => {
+                console.log("HTML: ", html)
+
+                const desk_container = document.createElement("div");
+                desk_container.id = "desk_container";
+                desk_container.innerHTML = html;
+
+                //adding css to the file
+                const link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = chrome.runtime.getURL('styles.css')
+                document.head.appendChild(link);
+                
+                document.body.appendChild(desk_container);
+                
+
+                const closeButton = document.getElementById("closeButton");
+
+                closeButton?.addEventListener("click", () => {
+                    desk_container.remove();
+                });
+                
+            })
+            .catch(err => console.error("Erro ao carregar o sidebar.html", err));
+    }
+}
+
+toggleExtension();
+
+
+
+
+
+/* 
+function toggleExtension() {
+
+    const existingSidebar = document.querySelector("#sidebar-container");
+    
+    if (existingSidebar) {
+        existingSidebar.remove();
+        
+    } else {
+        fetch(chrome.runtime.getURL("src/side_extension.html"))
+            .then(response => {
+                console.log(response);
+                return response.text()})
+            .then(html => {
+                console.log("HTML: ", html)
+                
+                //const sidebarContainer = document.createElement("div");
+                //sidebarContainer.id = "sidebar-container";
+                //sidebarContainer.innerHTML = html;
+                //document.body.appendChild(sidebarContainer);
+                //
+                //const closeButton = document.getElementById("closeButton");
+                //closeButton?.addEventListener("click", () => {
+                //   sidebarContainer.remove();
+                //});
+            })
+            .catch(err => console.error("Erro ao carregar o sidebar.html", err));
+    }
+}
+
+toggleExtension(); 
+*/

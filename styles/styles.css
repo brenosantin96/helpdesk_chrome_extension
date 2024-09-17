@@ -25,3 +25,51 @@
     justify-content: center;
     align-items: center;
 }
+
+#desk-container{
+    transition: all 0.5s ease-out;
+    width: 360px;
+    height: 720px;
+
+}
+
+.header-user-desk-containe{
+    height: 56px;
+    display: flex;
+    justify-content: right;
+}
+
+.header-desk-container{
+    height: 94px;
+    background-color: #F4F7FB;
+
+}
+
+.nav-header-desk-container{
+    height: 34px;
+}
+
+.body-desk-container{
+    padding: 12px 2px 2px 12px;
+    height: 433px;
+}
+
+.search-body-desk-container{
+    height: 40px;
+}
+
+.template-body-desk-container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.footer-desk-container{
+
+}
