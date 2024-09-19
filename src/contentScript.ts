@@ -42,7 +42,8 @@ toggleSquare();
 
 */
 
-
+//Essa funcao é para ativar a extensao no navegador, em principio vai abrir a extensao deixando apenas o botao
+//no meio verticalmente no canto direito da tela
 function toggleExtension() {
 
     const existing_desk_container = document.querySelector("#desk-container");
@@ -59,7 +60,7 @@ function toggleExtension() {
                 console.log("HTML: ", html)
 
                 const desk_container = document.createElement("div");
-                desk_container.id = "desk_container";
+                desk_container.id = "desk-container";
                 desk_container.innerHTML = html;
 
                 //adding css to the file
@@ -67,8 +68,15 @@ function toggleExtension() {
                 link.rel = "stylesheet";
                 link.href = chrome.runtime.getURL('styles.css')
                 document.head.appendChild(link);
-                
+
+                //adding div to body
                 document.body.appendChild(desk_container);
+
+                //Adding button to expand extension
+                const toggleButton = document.getElementById("desk-container-toggle-button");
+                toggleButton?.addEventListener("click", () => {
+                    desk_container.classList.toggle("open"); // Alterna a classe 'open'
+                });
                 
 
                 const closeButton = document.getElementById("closeButton");

@@ -1,75 +1,47 @@
-*{
+* {
     box-sizing: border-box;
 }
 
-.big_square { 
+#desk-container {
+    position: fixed;
+    top: 50%; /* Para centralizar verticalmente */
+    right: 0;
+    transform: translateY(-50%); /* Ajusta o container para ficar centralizado */
     display: flex;
-    justify-content: center;
+    flex-direction: row; /* Organiza o botão e o conteúdo horizontalmente */
     align-items: center;
-    width: 300px;
-    height: 300px;
-    z-index: 9999999999;
+    justify-content: flex-start;
     background-color: red;
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    width: 50px; /* Inicialmente só mostra o botão */
+    height: 70vh; /* 70% da altura da viewport */
+    transition: all 0.4s ease; /* Transição suave */
+    overflow: hidden; /* Para esconder o conteúdo até a janela ser aberta */
 }
 
-.pokeButton {
-    margin: 10px;
-    padding: 10px;
-    background-color: darkcyan;
-    color: black;
-    border: 1px solid black;
-    border-radius: 10px;
+#desk-container.open {
+    width: 483px; /* 433px + 50px de largura do botão */
+}
+
+#desk-container-toggle-button {
+    display: flex;
     justify-content: center;
     align-items: center;
+    background-color: greenyellow;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    border: none;
+    z-index: 10;
 }
 
-#desk-container{
-    transition: all 0.5s ease-out;
-    width: 360px;
-    height: 720px;
-
+.desk-container-body {
+    padding: 12px;
+    display: none; /* Inicialmente escondido */
+    flex: 1;
+    background-color: white; /* Fundo branco para contraste */
+    z-index: 15;
 }
 
-.header-user-desk-containe{
-    height: 56px;
-    display: flex;
-    justify-content: right;
-}
-
-.header-desk-container{
-    height: 94px;
-    background-color: #F4F7FB;
-
-}
-
-.nav-header-desk-container{
-    height: 34px;
-}
-
-.body-desk-container{
-    padding: 12px 2px 2px 12px;
-    height: 433px;
-}
-
-.search-body-desk-container{
-    height: 40px;
-}
-
-.template-body-desk-container{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 5px;
-    padding: 5px;
-}
-
-.footer-desk-container{
-
+#desk-container.open .desk-container-body {
+    display: block; /* Mostra o conteúdo ao abrir a janela */
 }
