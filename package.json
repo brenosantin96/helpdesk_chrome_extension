@@ -15,6 +15,7 @@
     "chrome-types": "^0.1.303",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
+    "file-loader": "^6.2.0",
     "mini-css-extract-plugin": "^2.9.1",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.1",

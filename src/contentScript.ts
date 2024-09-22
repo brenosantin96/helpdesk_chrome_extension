@@ -47,21 +47,23 @@ toggleSquare();
 function toggleExtension() {
 
     const existing_desk_container = document.querySelector("#desk-container");
-    
+
     if (existing_desk_container) {
         existing_desk_container.remove();
-        
+
     } else {
         fetch(chrome.runtime.getURL("side_extension.html"))
             .then(response => {
                 console.log(response);
-                return response.text()})
+                return response.text()
+            })
             .then(html => {
-                console.log("HTML: ", html)
 
-                const desk_container = document.createElement("div");
-                desk_container.id = "desk-container";
-                desk_container.innerHTML = html;
+                console.log("HTML: ", html)
+                const container = document.createElement("div");
+                container.innerHTML = html;
+                document.body.appendChild(container);
+
 
                 //adding css to the file
                 const link = document.createElement("link");
@@ -69,22 +71,36 @@ function toggleExtension() {
                 link.href = chrome.runtime.getURL('styles.css')
                 document.head.appendChild(link);
 
-                //adding div to body
-                document.body.appendChild(desk_container);
+                const desk_container = document.querySelector("#desk-container");
+                if (desk_container) {
+                    desk_container.id = "desk-container";
 
-                //Adding button to expand extension
-                const toggleButton = document.getElementById("desk-container-toggle-button");
-                toggleButton?.addEventListener("click", () => {
-                    desk_container.classList.toggle("open"); // Alterna a classe 'open'
-                });
-                
 
-                const closeButton = document.getElementById("closeButton");
+                    //Adding button to expand extension
+                    const toggleButton = document.getElementById("desk-container-toggle-button");
+                    toggleButton?.addEventListener("click", () => {
+                        desk_container.classList.toggle("open"); // Alterna a classe 'open'
+                    });
 
-                closeButton?.addEventListener("click", () => {
-                    desk_container.remove();
-                });
-                
+                    const closeButton = document.getElementById("closeButton");
+                    closeButton?.addEventListener("click", () => {
+                        desk_container.remove();
+                    });
+
+                    //Adding images
+
+                    // Corrige o caminho da imagem dinamicamente
+                    const imageElement = document.querySelector(".svgLupa img") as HTMLImageElement;
+                    if (imageElement) {
+                        imageElement.src = chrome.runtime.getURL("images/search_icon_png.png");
+                    }
+
+                }
+
+
+
+
+
             })
             .catch(err => console.error("Erro ao carregar o sidebar.html", err));
     }

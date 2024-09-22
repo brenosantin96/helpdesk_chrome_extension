@@ -16,15 +16,28 @@
   "action": {},
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["contentScript.js"],
-      "css": ["styles.css"]
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "contentScript.js"
+      ],
+      "css": [
+        "styles.css"
+      ]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["styles.css", "side_extension.html"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "styles.css",
+        "side_extension.html",
+        "images/search_icon_png.png",
+        "images/search_icon.svg"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }

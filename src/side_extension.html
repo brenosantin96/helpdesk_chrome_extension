@@ -1,20 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desk-Container</title>
 </head>
+
 <body>
     <!-- Container principal da extensão -->
     <div id="desk-container">
         <!-- Botão de toggle, vai ficar à esquerda do desk-container-body -->
         <button id="desk-container-toggle-button">BUTTON</button>
-        
+
         <!-- Corpo da janela que será exibido ao clicar no botão -->
         <div class="desk-container-body">
-            Janela aberta!
+            <div class="header-body-container">
+                <div class="top-area-header">
+                    <div>
+                        <button class="button-header-container">Home</button>
+                    </div>
+                    <div>
+                        <div class="linkUser">
+                            <a href="#">Breno</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-area-header">
+                    <div class="text-bottom-area-header">
+                        Templates
+                    </div>
+                </div>
+            </div>
+            <div class="content-body-container">
+                <div class="searchbox-body-container">
+                    <div class="svgLupa">
+                        <img />
+                    </div>
+                    <input class="searchbox-body-container-text" placeholder="Search..." />
+                </div>
+            </div>
+            <div class="footer-body-container">
+
+                Footer
+            </div>
         </div>
     </div>
 </body>
+
 </html>
