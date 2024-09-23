@@ -95,6 +95,11 @@ function toggleExtension() {
                         imageElement.src = chrome.runtime.getURL("images/search_icon_png.png");
                     }
 
+                    const imageElementArrowKeyDown = document.querySelector(".arrowKeyDownTemplate img") as HTMLImageElement;
+                    if (imageElementArrowKeyDown) {
+                        imageElementArrowKeyDown.src = chrome.runtime.getURL("images/down-arrow-key.png");
+                    }
+
                 }
 
 

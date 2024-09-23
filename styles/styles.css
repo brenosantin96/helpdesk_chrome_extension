@@ -90,10 +90,15 @@
     border-bottom: 2px solid #005A04
 }
 
-.searchbox-body-container{
+.content-body-container{
+    display: flex;
+    flex-direction: column;
     margin-top: 10px;
     margin-left: 14px ;
-    margin-right: 10px;
+    margin-right: 11px;
+}
+
+.searchbox-body-container{
     display: flex;
     align-items: center;
     height: 40px;
@@ -122,6 +127,96 @@
     height: 16px; 
     width: 16px;  
 }
+
+.templateToggler{
+    margin-top: 8px;
+    padding-right: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.templateCounter{
+    color: #6F747C;
+    font-size: 12px;
+}
+
+.arrowKeyDownTemplate{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 102, 255, 0);
+    width: 26px;
+    height: 26px;
+    border-radius: 10px;
+    color: #6F747C;
+    font-size: 12px;
+}
+
+.arrowKeyDownTemplate:hover{
+    background-color: #ACC1FF;
+    font-weight: 700;
+}
+
+.arrowKeyDownTemplate img{
+    width: 16px;
+    height: 16px;
+}
+
+.templates_expanded{
+    display: flex;
+    flex-direction: column; /* Para garantir que a lista ocupe toda a coluna */
+    max-height: 400px; /* Defina uma altura máxima para que o scroll funcione */
+    overflow-y: auto; /* Habilita o scroll vertical */
+    padding-right: 10px; /* Opcional: Para espaçamento entre o scroll e o conteúdo */
+}
+
+.templates_list{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.template_item{
+    color: rgb(34, 37, 40);
+    margin-top: 6px;
+    margin-bottom: 6px;
+    padding-top: 4px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(233, 238, 244);
+    border: 1px solid;
+    border-color: rgb(216, 223, 231);
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    height: 52px;
+    border-radius: 5px;
+}
+
+.template_item:hover{
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.list-full-title{
+    padding-left: 5px;
+    padding-bottom: 3px;
+    color: rgb(34, 37, 40);
+    font-size: 14px;
+}
+
+.list-full-title:hover{
+    font-weight: 700;
+}
+
+.list-subtitle{
+    padding-left: 5px;
+    color: rgb(75, 80, 86);
+    font-size: 12px;
+}
+
+
+
+
 
 
   
