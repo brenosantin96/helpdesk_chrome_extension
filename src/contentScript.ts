@@ -1,49 +1,41 @@
+let helpTexts = [
+    { id: 1, shortcut: 'Pendiente', description: 'Texto bem legal e bem interessante sobre pendiente' },
+    { id: 2, shortcut: 'Onboard', description: 'Texto bem legal e bem interessante sobre Onboarding' },
+    { id: 3, shortcut: 'Pencierre', description: 'Texto bem legal e bem interessante sobre Pencierre' },
+    { id: 4, shortcut: 'Citrix', description: 'Texto bem legal e bem interessante sobre Citrix' },
+    { id: 5, shortcut: 'O365', description: 'Texto bem legal e bem interessante sobre O365' },
+    { id: 6, shortcut: '53011', description: 'Texto bem legal e bem interessante sobre error 53011' },
+    { id: 7, shortcut: 'Intunazo', description: 'Texto bem legal e bem interessante sobre Intunazo' }
+];
 
-/*
-function toggleSquare(): void {
-    const existingSquare = document.querySelector("#bigSquareID");
+// Função para criar e adicionar os templates dinamicamente
+function renderHelpTexts() {
+    // Selecionar o elemento UL onde os itens serão inseridos
+    const templatesList = document.querySelector('.templates_list');
 
-    if (existingSquare) {
-        existingSquare.remove();
-        console.log("Quadrado removido");
-    } else {
-        // Cria o quadrado vermelho se não existir
-        const newDiv = document.createElement("div");
-        newDiv.classList.add("big_square");
-        newDiv.id = "bigSquareID";
-        document.body.appendChild(newDiv);
-        console.log("Quadrado criado");
-        
-        const poke_button = document.createElement("button");
-        poke_button.classList.add("pokeButton");
-        poke_button.innerHTML = "CONSULTAR POKEMONS";
-        newDiv.appendChild(poke_button);
+    if (!templatesList) return; // Certificar-se que o UL existe
 
-        // Ao clicar no botão, envia a mensagem para o background
-        poke_button.onclick = () => {
-            console.log("ENTROU NO poke_button.onclick");
-            
-            chrome.runtime.sendMessage({ action: "getPokemonData" }, (response) => {
-                // Verifica se a resposta foi recebida
-                console.log("Response recebida: ", response);
+    // Iterar sobre os helpTexts e criar os itens da lista
+    helpTexts.forEach(text => {
+        // Criar o elemento LI
+        const li = document.createElement('li');
+        li.classList.add('template_item'); // Adicionar a classe
 
-                if (response && response.success) {
-                    console.log("Dados dos Pokémons:", response.data);
-                } else {
-                    console.log("Erro ao buscar dados dos Pokémons");
-                }
-            });
-        };
-    }
+        // Adicionar o ID ao LI
+        li.id = `helpText-${text.id}`;
+
+        // Criar o conteúdo HTML do LI
+        li.innerHTML = `
+            <div class="list-full-title">${text.shortcut}</div>
+            <div class="list-subtitle">${text.description}</div>
+        `;
+
+        // Inserir o LI na lista
+        templatesList.appendChild(li);
+    });
 }
 
-// Chama a função para alternar a criação e remoção do quadrado
-toggleSquare();
-
-*/
-
 //Essa funcao é para ativar a extensao no navegador, em principio vai abrir a extensao deixando apenas o botao
-//no meio verticalmente no canto direito da tela
 function toggleExtension() {
 
     const existing_desk_container = document.querySelector("#desk-container");
@@ -75,6 +67,8 @@ function toggleExtension() {
                 if (desk_container) {
                     desk_container.id = "desk-container";
 
+                    console.log("helpTexts: ", helpTexts)
+
 
                     //Adding button to expand extension
                     const toggleButton = document.getElementById("desk-container-toggle-button");
@@ -87,18 +81,37 @@ function toggleExtension() {
                         desk_container.remove();
                     });
 
-                    //Adding images
+                    //Button to toggle Templates
+                    const arrowKeyTemplateButton = desk_container.querySelector(".arrowKeyTemplate");
+                    if (arrowKeyTemplateButton) {
 
+                        const templates_expanded = document.querySelector("#templatesDiv")
+                        console.log("templates_expanded:", templates_expanded)
+                        arrowKeyTemplateButton.addEventListener("click", () => {
+                            templates_expanded?.classList.toggle("templates_closed"); // Alterna a classe 'templates_closed' e "templates_expanded"
+                        })
+                    }
+
+                    //Adding images
                     // Corrige o caminho da imagem dinamicamente
                     const imageElement = document.querySelector(".svgLupa img") as HTMLImageElement;
                     if (imageElement) {
                         imageElement.src = chrome.runtime.getURL("images/search_icon_png.png");
                     }
 
-                    const imageElementArrowKeyDown = document.querySelector(".arrowKeyDownTemplate img") as HTMLImageElement;
-                    if (imageElementArrowKeyDown) {
-                        imageElementArrowKeyDown.src = chrome.runtime.getURL("images/down-arrow-key.png");
+                    const imageElementArrowKey = document.querySelector(".arrowKeyTemplate img") as HTMLImageElement;
+                    if (imageElementArrowKey) {
+                        imageElementArrowKey.src = chrome.runtime.getURL("images/down-arrow-key.png");
                     }
+
+                    //templateCounter
+                    let templateCounter = desk_container.querySelector(".templateCounter")
+                    if (templateCounter) {
+                        templateCounter.innerHTML = `Templates (${helpTexts.length})`
+                    }
+
+                    // Adicionar os templates dinamicamente
+                    renderHelpTexts();
 
                 }
 
@@ -148,4 +161,45 @@ function toggleExtension() {
 }
 
 toggleExtension(); 
+*/
+
+
+
+/*
+function toggleSquare(): void {
+    const existingSquare = document.querySelector("#bigSquareID");
+
+    if (existingSquare) {
+        existingSquare.remove();
+        console.log("Quadrado removido");
+    } else {
+        // Cria o quadrado vermelho se não existir
+        const newDiv = document.createElement("div");
+        newDiv.classList.add("big_square");
+        newDiv.id = "bigSquareID";
+        document.body.appendChild(newDiv);
+        console.log("Quadrado criado");
+        
+        const poke_button = document.createElement("button");
+        poke_button.classList.add("pokeButton");
+        poke_button.innerHTML = "CONSULTAR POKEMONS";
+        newDiv.appendChild(poke_button);
+
+        // Ao clicar no botão, envia a mensagem para o background
+        poke_button.onclick = () => {
+            console.log("ENTROU NO poke_button.onclick");
+            
+            chrome.runtime.sendMessage({ action: "getPokemonData" }, (response) => {
+                // Verifica se a resposta foi recebida
+                console.log("Response recebida: ", response);
+
+                if (response && response.success) {
+                    console.log("Dados dos Pokémons:", response.data);
+                } else {
+                    console.log("Erro ao buscar dados dos Pokémons");
+                }
+            });
+        };
+    }
+}
 */

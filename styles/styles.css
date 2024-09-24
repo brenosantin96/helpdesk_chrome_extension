@@ -12,7 +12,6 @@
     flex-direction: row; /* Organiza o botão e o conteúdo horizontalmente */
     align-items: center;
     justify-content: flex-start;
-    background-color: red;
     width: 50px; /* Inicialmente só mostra o botão */
     height: 70vh; /* 70% da altura da viewport */
     transition: all 0.4s ease; /* Transição suave */
@@ -46,7 +45,8 @@
 }
 
 #desk-container.open .desk-container-body {
-    display: block; /* Mostra o conteúdo ao abrir a janela */
+    display: flex; /* Mostra o conteúdo ao abrir a janela */
+    flex-direction: column;
 }
 
 .top-area-header{
@@ -140,7 +140,7 @@
     font-size: 12px;
 }
 
-.arrowKeyDownTemplate{
+.arrowKeyTemplate{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -152,12 +152,12 @@
     font-size: 12px;
 }
 
-.arrowKeyDownTemplate:hover{
+.arrowKeyTemplate:hover{
     background-color: #ACC1FF;
     font-weight: 700;
 }
 
-.arrowKeyDownTemplate img{
+.arrowKeyTemplate img{
     width: 16px;
     height: 16px;
 }
@@ -168,6 +168,10 @@
     max-height: 400px; /* Defina uma altura máxima para que o scroll funcione */
     overflow-y: auto; /* Habilita o scroll vertical */
     padding-right: 10px; /* Opcional: Para espaçamento entre o scroll e o conteúdo */
+}
+
+.templates_closed{
+    display: none;
 }
 
 .templates_list{
@@ -212,6 +216,17 @@
     padding-left: 5px;
     color: rgb(75, 80, 86);
     font-size: 12px;
+}
+
+.footer-body-container{
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    color: #4B5056;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: 600;
 }
 
 
