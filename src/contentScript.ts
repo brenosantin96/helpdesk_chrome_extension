@@ -1,3 +1,9 @@
+type helpText = {
+    id: number;
+    shortcut: string;
+    description: string
+}
+
 let helpTexts = [
     { id: 1, shortcut: 'Pendiente', description: 'Texto bem legal e bem interessante sobre pendiente' },
     { id: 2, shortcut: 'Onboard', description: 'Texto bem legal e bem interessante sobre Onboarding' },
@@ -7,6 +13,49 @@ let helpTexts = [
     { id: 6, shortcut: '53011', description: 'Texto bem legal e bem interessante sobre error 53011' },
     { id: 7, shortcut: 'Intunazo', description: 'Texto bem legal e bem interessante sobre Intunazo' }
 ];
+
+
+function handleOnSearch(element: any, helptexts: helpText[]) : helpText[] {
+
+    // Filtra os textos que correspondem ao shortcut
+    const filteredHelpTexts = helpTexts.filter(helpText => 
+        helpText.shortcut.toLowerCase().includes(element.value)
+    );
+
+    return filteredHelpTexts;
+
+}
+
+// Função para atualizar os templates dinamicamente com base nos resultados da busca
+function updateHelpTexts(filteredHelpTexts: helpText[]) {
+    // Selecionar o elemento UL onde os itens serão inseridos
+    const templatesList = document.querySelector('.templates_list');
+
+    if (!templatesList) return; // Certificar-se que o UL existe
+
+    // Limpar os itens anteriores
+    templatesList.innerHTML = '';
+
+    // Iterar sobre os helpTexts filtrados e criar os itens da lista
+    filteredHelpTexts.forEach(text => {
+        // Criar o elemento LI
+        const li = document.createElement('li');
+        li.classList.add('template_item'); // Adicionar a classe
+
+        // Adicionar o ID ao LI
+        li.id = `helpText-${text.id}`;
+
+        // Criar o conteúdo HTML do LI
+        li.innerHTML = `
+            <div class="list-full-title">${text.shortcut}</div>
+            <div class="list-subtitle">${text.description}</div>
+        `;
+
+        // Inserir o LI na lista
+        templatesList.appendChild(li);
+    });
+}
+
 
 // Função para criar e adicionar os templates dinamicamente
 function renderHelpTexts() {
@@ -80,6 +129,16 @@ function toggleExtension() {
                     closeButton?.addEventListener("click", () => {
                         desk_container.remove();
                     });
+
+                    // Alteração na função de busca para disparar com o evento 'input'
+                    const searchbox = desk_container.querySelector(".searchbox-body-container-text");
+                    if (searchbox) {
+                        searchbox.addEventListener("input", (event) => {
+                            const searchTerm = (event.target as HTMLInputElement).value.toLowerCase();
+                            const filteredHelpTexts = handleOnSearch(searchbox, helpTexts);
+                            updateHelpTexts(filteredHelpTexts);
+                        });
+                    }
 
                     //Button to toggle Templates
                     const arrowKeyTemplateButton = desk_container.querySelector(".arrowKeyTemplate");
