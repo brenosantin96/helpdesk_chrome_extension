@@ -63,9 +63,24 @@
     border-radius: 9999px;
     background-color: #D8DFE7;
     padding: 10px;
-    color: #4B5056;
-    
+    color: #4B5056; 
 }
+
+.button-header-container-with-image{
+    border-radius: 9999px;
+    background-color: #D8DFE7;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-header-container-with-image img{
+    height: 16px;
+    width: 16px;
+}
+
+
 
 .linkUser{
     background-color: #D8DFE7;
@@ -102,6 +117,8 @@
     display: none
 }
 
+
+
 #content-body-container-template{
     display: flex;
     flex-direction: column;
@@ -112,6 +129,7 @@
 
 #content-body-container-template.closed{
     display: none;
+    
 }
 
 .searchbox-body-container{
@@ -186,9 +204,6 @@
     padding-right: 10px; /* Opcional: Para espaçamento entre o scroll e o conteúdo */
 }
 
-.templates_closed{
-    display: none;
-}
 
 .templates_list{
     list-style-type: none;

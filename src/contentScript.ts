@@ -8,6 +8,25 @@ type helpText = {
 
 let helpTexts: helpText[] = []
 
+function firstGetTexts() {
+    if (helpTexts.length === 0) {
+        //sending message to background.ts to get all text Types
+        chrome.runtime.sendMessage({ type: 'getHelpTexts' }, (response) => {
+            if (response.error) {
+                console.error('error to retrieve help texts. ', response.error);
+            } else {
+                helpTexts = response.helpTexts;
+                console.log('HelpTexts:', helpTexts);
+
+                // Aqui você chama renderHelpTexts depois que os textos são recebidos
+                renderHelpTexts();
+            }
+        });
+    }
+}
+
+firstGetTexts();
+
 
 function handleOnSearch(element: any, helptexts: helpText[]): helpText[] {
 
@@ -56,6 +75,9 @@ function updateHelpTexts(filteredHelpTexts: helpText[]) {
     });
 }
 
+//Devo ter um toggle se tem algum LI selecionado.
+//Se tem algum LI selecionado, a content-body-container-template vai ser visivel
+
 
 // Função para criar e adicionar os templates dinamicamente
 function renderHelpTexts() {
@@ -67,6 +89,8 @@ function renderHelpTexts() {
     //limpando lista atual
     templatesList.innerHTML = '';
 
+
+    console.log("HelpTexts dentro de renderHelpTexts:", helpTexts)
     // Iterar sobre os helpTexts e criar os itens da lista
     helpTexts.forEach(text => {
         // Criar o elemento LI
@@ -86,11 +110,28 @@ function renderHelpTexts() {
             //open a new WINDOW in TEMPLATE!
             const bodyContainer = document.querySelector("#content-body-container")
             const bodyContainerTemplate = document.querySelector("#content-body-container-template")
-            if(bodyContainer && bodyContainerTemplate){
-                //criar uma funcao para alternar os toggles!
-                bodyContainer.classList.add("closed"); // Alterna a classe 'templates_closed' e "templates_expanded"
-                bodyContainerTemplate.classList.remove("closed")
+            const button1toparea = document.querySelector("#button1toparea");
+            const backButton = document.createElement("button")
+            const imageInButton = document.createElement("img") as HTMLImageElement;
+
+
+            //adding image
+            if (imageInButton) {
+                imageInButton.src = chrome.runtime.getURL("images/left-arrow-key.png");
+                backButton.appendChild(imageInButton)
             }
+
+
+            // Localiza o botão dentro da div
+            const button = button1toparea?.querySelector('button');
+            if(button){
+                button.remove();
+            }
+            button1toparea?.appendChild(backButton)
+            backButton.classList.add("button-header-container-with-image");
+
+
+
             console.log(`${li.id} sendo clicado`);
         });
 
@@ -104,18 +145,7 @@ function toggleExtension() {
 
     const existing_desk_container = document.querySelector("#desk-container");
 
-    if (helpTexts.length === 0) {
-        //sending message to background.ts to get all text Types
-        chrome.runtime.sendMessage({ type: 'getHelpTexts' }, (response) => {
-            if (response.error) {
-                console.error('error to retrieve help texts. ', response.error);
-            } else {
-                helpTexts = response.helpTexts;
-                renderHelpTexts()
-                console.log('HelpTexts:', helpTexts);
-            }
-        });
-    }
+
 
     if (existing_desk_container) {
         existing_desk_container.remove();
@@ -144,7 +174,6 @@ function toggleExtension() {
                 if (desk_container) {
                     desk_container.id = "desk-container";
 
-                    console.log("helpTexts: ", helpTexts)
 
 
                     //Adding button to expand extension

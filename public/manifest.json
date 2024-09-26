@@ -35,7 +35,8 @@
         "images/search_icon_png.png",
         "images/search_icon.svg",
         "images/down-arrow-key.png",
-        "images/up-arrow-key.png"
+        "images/up-arrow-key.png",
+        "images/left-arrow-key.png"
       ],
       "matches": [
         "<all_urls>"
