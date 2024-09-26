@@ -1,24 +1,18 @@
 type helpText = {
     id: number;
     shortcut: string;
-    description: string
+    type_spanish: string
+    type_english: string
 }
 
-let helpTexts = [
-    { id: 1, shortcut: 'Pendiente', description: 'Texto bem legal e bem interessante sobre pendiente' },
-    { id: 2, shortcut: 'Onboard', description: 'Texto bem legal e bem interessante sobre Onboarding' },
-    { id: 3, shortcut: 'Pencierre', description: 'Texto bem legal e bem interessante sobre Pencierre' },
-    { id: 4, shortcut: 'Citrix', description: 'Texto bem legal e bem interessante sobre Citrix' },
-    { id: 5, shortcut: 'O365', description: 'Texto bem legal e bem interessante sobre O365' },
-    { id: 6, shortcut: '53011', description: 'Texto bem legal e bem interessante sobre error 53011' },
-    { id: 7, shortcut: 'Intunazo', description: 'Texto bem legal e bem interessante sobre Intunazo' }
-];
+
+let helpTexts: helpText[] = []
 
 
-function handleOnSearch(element: any, helptexts: helpText[]) : helpText[] {
+function handleOnSearch(element: any, helptexts: helpText[]): helpText[] {
 
     // Filtra os textos que correspondem ao shortcut
-    const filteredHelpTexts = helpTexts.filter(helpText => 
+    const filteredHelpTexts = helptexts.filter(helpText =>
         helpText.shortcut.toLowerCase().includes(element.value)
     );
 
@@ -45,11 +39,17 @@ function updateHelpTexts(filteredHelpTexts: helpText[]) {
         // Adicionar o ID ao LI
         li.id = `helpText-${text.id}`;
 
+        //li.onclick = () => (console.log(`${li.id} sendo clicado`))
+
         // Criar o conteúdo HTML do LI
         li.innerHTML = `
             <div class="list-full-title">${text.shortcut}</div>
-            <div class="list-subtitle">${text.description}</div>
+            <div class="list-subtitle">${text.type_spanish}</div>
         `;
+
+        li.addEventListener('click', () => {
+            console.log(`${li.id} sendo clicado`);
+        });
 
         // Inserir o LI na lista
         templatesList.appendChild(li);
@@ -64,6 +64,9 @@ function renderHelpTexts() {
 
     if (!templatesList) return; // Certificar-se que o UL existe
 
+    //limpando lista atual
+    templatesList.innerHTML = '';
+
     // Iterar sobre os helpTexts e criar os itens da lista
     helpTexts.forEach(text => {
         // Criar o elemento LI
@@ -76,8 +79,20 @@ function renderHelpTexts() {
         // Criar o conteúdo HTML do LI
         li.innerHTML = `
             <div class="list-full-title">${text.shortcut}</div>
-            <div class="list-subtitle">${text.description}</div>
+            <div class="list-subtitle">${text.type_spanish}</div>
         `;
+
+        li.addEventListener('click', () => {
+            //open a new WINDOW in TEMPLATE!
+            const bodyContainer = document.querySelector("#content-body-container")
+            const bodyContainerTemplate = document.querySelector("#content-body-container-template")
+            if(bodyContainer && bodyContainerTemplate){
+                //criar uma funcao para alternar os toggles!
+                bodyContainer.classList.add("closed"); // Alterna a classe 'templates_closed' e "templates_expanded"
+                bodyContainerTemplate.classList.remove("closed")
+            }
+            console.log(`${li.id} sendo clicado`);
+        });
 
         // Inserir o LI na lista
         templatesList.appendChild(li);
@@ -88,6 +103,19 @@ function renderHelpTexts() {
 function toggleExtension() {
 
     const existing_desk_container = document.querySelector("#desk-container");
+
+    if (helpTexts.length === 0) {
+        //sending message to background.ts to get all text Types
+        chrome.runtime.sendMessage({ type: 'getHelpTexts' }, (response) => {
+            if (response.error) {
+                console.error('error to retrieve help texts. ', response.error);
+            } else {
+                helpTexts = response.helpTexts;
+                renderHelpTexts()
+                console.log('HelpTexts:', helpTexts);
+            }
+        });
+    }
 
     if (existing_desk_container) {
         existing_desk_container.remove();
@@ -169,8 +197,6 @@ function toggleExtension() {
                         templateCounter.innerHTML = `Templates (${helpTexts.length})`
                     }
 
-                    // Adicionar os templates dinamicamente
-                    renderHelpTexts();
 
                 }
 
