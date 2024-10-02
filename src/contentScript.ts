@@ -7,6 +7,7 @@ type helpText = {
 
 
 let helpTexts: helpText[] = []
+let counterHelpText = 0;
 
 function firstGetTexts() {
     if (helpTexts.length === 0) {
@@ -110,6 +111,11 @@ function renderHelpTexts() {
             //open a new WINDOW in TEMPLATE!
             const bodyContainer = document.querySelector("#content-body-container")
             const bodyContainerTemplate = document.querySelector("#content-body-container-template")
+
+            //toggling classes
+            bodyContainer?.classList.add("closed")
+            bodyContainerTemplate?.classList.remove("closed")
+
             const button1toparea = document.querySelector("#button1toparea");
             const backButton = document.createElement("button")
             const imageInButton = document.createElement("img") as HTMLImageElement;
@@ -124,11 +130,19 @@ function renderHelpTexts() {
 
             // Localiza o botão dentro da div
             const button = button1toparea?.querySelector('button');
-            if(button){
+            if (button) {
                 button.remove();
             }
             button1toparea?.appendChild(backButton)
             backButton.classList.add("button-header-container-with-image");
+
+            //evento de clique da setinha para tras
+            backButton.addEventListener('click', () => {
+                //toggling classes
+                bodyContainer?.classList.remove("closed")
+                bodyContainerTemplate?.classList.add("closed")
+
+            })
 
 
 
@@ -138,7 +152,23 @@ function renderHelpTexts() {
         // Inserir o LI na lista
         templatesList.appendChild(li);
     });
+
+    // Atualiza o contador com base no número de templates carregados
+    counterHelpText = helpTexts.length;
+
+    // Atualiza o contador de templates no DOM
+    updateTemplateCounter();
+
 }
+
+// Função para atualizar o contador de templates, vai ser usado depois de renderizado
+function updateTemplateCounter() {
+    const templateCounter = document.querySelector(".templateCounter");
+    if (templateCounter) {
+        templateCounter.innerHTML = `Templates (${counterHelpText})`;
+    }
+}
+
 
 //Essa funcao é para ativar a extensao no navegador, em principio vai abrir a extensao deixando apenas o botao
 function toggleExtension() {
@@ -170,6 +200,7 @@ function toggleExtension() {
                 link.href = chrome.runtime.getURL('styles.css')
                 document.head.appendChild(link);
 
+                //getting main container
                 const desk_container = document.querySelector("#desk-container");
                 if (desk_container) {
                     desk_container.id = "desk-container";
@@ -202,9 +233,17 @@ function toggleExtension() {
                     if (arrowKeyTemplateButton) {
 
                         const templates_expanded = document.querySelector("#templatesDiv")
-                        console.log("templates_expanded:", templates_expanded)
                         arrowKeyTemplateButton.addEventListener("click", () => {
-                            templates_expanded?.classList.toggle("templates_closed"); // Alterna a classe 'templates_closed' e "templates_expanded"
+                            if(templates_expanded){
+                                templates_expanded.classList.toggle("templates_closed"); // Alterna a classe 'templates_closed' e "templates_expanded"
+
+                                const iconToggler = document.querySelector(".templates_closed")
+                                if(iconToggler){
+                                    imageElementArrowKey.src = chrome.runtime.getURL("images/up-arrow-key.png");
+                                } else {
+                                    imageElementArrowKey.src = chrome.runtime.getURL("images/down-arrow-key.png");
+                                }
+                            }
                         })
                     }
 
@@ -215,16 +254,13 @@ function toggleExtension() {
                         imageElement.src = chrome.runtime.getURL("images/search_icon_png.png");
                     }
 
+                    //Arrow key image button
                     const imageElementArrowKey = document.querySelector(".arrowKeyTemplate img") as HTMLImageElement;
                     if (imageElementArrowKey) {
                         imageElementArrowKey.src = chrome.runtime.getURL("images/down-arrow-key.png");
                     }
 
-                    //templateCounter
-                    let templateCounter = desk_container.querySelector(".templateCounter")
-                    if (templateCounter) {
-                        templateCounter.innerHTML = `Templates (${helpTexts.length})`
-                    }
+                  
 
 
                 }

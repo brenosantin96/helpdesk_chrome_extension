@@ -205,6 +205,13 @@
 }
 
 
+.templates_closed{
+    position: fixed;
+    right: -999px;
+    transition: all ease 2s;
+}
+
+
 .templates_list{
     list-style-type: none;
     margin: 0;
