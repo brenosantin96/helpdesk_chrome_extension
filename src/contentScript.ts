@@ -232,16 +232,22 @@ function toggleExtension() {
                     const arrowKeyTemplateButton = desk_container.querySelector(".arrowKeyTemplate");
                     if (arrowKeyTemplateButton) {
 
-                        const templates_expanded = document.querySelector("#templatesDiv")
+                        const templates_expanded = document.querySelector("#templatesDiv") as HTMLElement;
                         arrowKeyTemplateButton.addEventListener("click", () => {
                             if(templates_expanded){
+
                                 templates_expanded.classList.toggle("templates_closed"); // Alterna a classe 'templates_closed' e "templates_expanded"
+                    
+                                
 
                                 const iconToggler = document.querySelector(".templates_closed")
                                 if(iconToggler){
-                                    imageElementArrowKey.src = chrome.runtime.getURL("images/up-arrow-key.png");
+                                    imageElementArrowKey.src = chrome.runtime.getURL("images/right-arrow-key.png");
+                                    templates_expanded.style.right = "-900px";  // Modifica o estilo inline
                                 } else {
-                                    imageElementArrowKey.src = chrome.runtime.getURL("images/down-arrow-key.png");
+                                    imageElementArrowKey.src = chrome.runtime.getURL("images/left-arrow-key.png");
+                                    templates_expanded.style.right = "0px";  // Modifica o estilo inline
+
                                 }
                             }
                         })
@@ -257,7 +263,13 @@ function toggleExtension() {
                     //Arrow key image button
                     const imageElementArrowKey = document.querySelector(".arrowKeyTemplate img") as HTMLImageElement;
                     if (imageElementArrowKey) {
-                        imageElementArrowKey.src = chrome.runtime.getURL("images/down-arrow-key.png");
+                        imageElementArrowKey.src = chrome.runtime.getURL("images/left-arrow-key.png");
+                    }
+
+                    //Arrow key image button
+                    const buttonHeaderContainerImg = document.querySelector(".button-header-container img") as HTMLImageElement;
+                    if (buttonHeaderContainerImg) {
+                        buttonHeaderContainerImg.src = chrome.runtime.getURL("images/home.png");
                     }
 
                   

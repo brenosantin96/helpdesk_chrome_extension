@@ -59,14 +59,8 @@
     align-items: center;
 }
 
-.button-header-container{
-    border-radius: 9999px;
-    background-color: #D8DFE7;
-    padding: 10px;
-    color: #4B5056; 
-}
 
-.button-header-container-with-image{
+.button-header-container{
     border-radius: 9999px;
     background-color: #D8DFE7;
     padding: 10px;
@@ -75,11 +69,10 @@
     align-items: center;
 }
 
-.button-header-container-with-image img{
+.button-header-container img{
     height: 16px;
     width: 16px;
 }
-
 
 
 .linkUser{
@@ -197,18 +190,18 @@
 }
 
 .templates_expanded{
+    position: relative;
     display: flex;
     flex-direction: column; /* Para garantir que a lista ocupe toda a coluna */
     max-height: 400px; /* Defina uma altura máxima para que o scroll funcione */
     overflow-y: auto; /* Habilita o scroll vertical */
     padding-right: 10px; /* Opcional: Para espaçamento entre o scroll e o conteúdo */
+    transition: all ease 0.5s;
 }
 
 
 .templates_closed{
-    position: fixed;
-    right: -999px;
-    transition: all ease 2s;
+    /* right: -999px; */
 }
 
 
@@ -216,6 +209,7 @@
     list-style-type: none;
     margin: 0;
     padding: 0;
+    
 }
 
 .template_item{
