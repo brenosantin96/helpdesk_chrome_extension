@@ -57,7 +57,7 @@ function updateHelpTexts(filteredHelpTexts: helpText[]) {
         li.classList.add('template_item'); // Adicionar a classe
 
         // Adicionar o ID ao LI
-        li.id = `helpText-${text.id}`;
+        li.id = `${text.id}`;
 
         //li.onclick = () => (console.log(`${li.id} sendo clicado`))
 
@@ -99,7 +99,7 @@ function renderHelpTexts() {
         li.classList.add('template_item'); // Adicionar a classe
 
         // Adicionar o ID ao LI
-        li.id = `helpText-${text.id}`;
+        li.id = `${text.id}`;
 
         // Criar o conteúdo HTML do LI
         li.innerHTML = `
@@ -134,16 +134,37 @@ function renderHelpTexts() {
                 button.remove();
             }
             button1toparea?.appendChild(backButton)
-            backButton.classList.add("button-header-container-with-image");
+            backButton.classList.add("button-header-container");
+
+
+            //adicionando texto do elemento clicado no fullText.
+            let triggerInput = document.querySelector(".trigger-input input") as HTMLInputElement;
+            let bigTextInputTemplateTrigger = document.querySelector(".full-text-trigger");
+            let textToPopulateInTemplateTrigger = helpTexts.find((item) => item.id.toString() === li.id.toString());
+            if(textToPopulateInTemplateTrigger){
+                if(triggerInput){
+                    triggerInput.value = textToPopulateInTemplateTrigger.shortcut
+                }
+                if(bigTextInputTemplateTrigger){
+                    bigTextInputTemplateTrigger.innerHTML = textToPopulateInTemplateTrigger.type_spanish;
+                }
+            }
 
             //evento de clique da setinha para tras
             backButton.addEventListener('click', () => {
                 //toggling classes
                 bodyContainer?.classList.remove("closed")
                 bodyContainerTemplate?.classList.add("closed")
+                imageInButton.src = chrome.runtime.getURL("images/home.png");
+
+                if(triggerInput){
+                    triggerInput.value = ""
+                }
+                if(bigTextInputTemplateTrigger){
+                    bigTextInputTemplateTrigger.innerHTML = "";
+                }
 
             })
-
 
 
             console.log(`${li.id} sendo clicado`);
