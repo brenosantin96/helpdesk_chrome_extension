@@ -1,3 +1,6 @@
+import { textToHtmlParagraph } from './utils';
+
+
 type helpText = {
     id: number;
     shortcut: string;
@@ -18,8 +21,6 @@ function firstGetTexts() {
             } else {
                 helpTexts = response.helpTexts;
                 console.log('HelpTexts:', helpTexts);
-
-                // Aqui você chama renderHelpTexts depois que os textos são recebidos
                 renderHelpTexts();
             }
         });
@@ -31,7 +32,7 @@ firstGetTexts();
 
 function handleOnSearch(element: any, helptexts: helpText[]): helpText[] {
 
-    // Filtra os textos que correspondem ao shortcut
+    // Filtering texts to match shortcut
     const filteredHelpTexts = helptexts.filter(helpText =>
         helpText.shortcut.toLowerCase().includes(element.value)
     );
@@ -40,28 +41,24 @@ function handleOnSearch(element: any, helptexts: helpText[]): helpText[] {
 
 }
 
-// Função para atualizar os templates dinamicamente com base nos resultados da busca
+// update templates by search
 function updateHelpTexts(filteredHelpTexts: helpText[]) {
-    // Selecionar o elemento UL onde os itens serão inseridos
+    
     const templatesList = document.querySelector('.templates_list');
 
-    if (!templatesList) return; // Certificar-se que o UL existe
+    if (!templatesList) return;
 
-    // Limpar os itens anteriores
     templatesList.innerHTML = '';
 
-    // Iterar sobre os helpTexts filtrados e criar os itens da lista
+    // Iterate in helpTexts
     filteredHelpTexts.forEach(text => {
-        // Criar o elemento LI
-        const li = document.createElement('li');
-        li.classList.add('template_item'); // Adicionar a classe
 
-        // Adicionar o ID ao LI
+        const li = document.createElement('li');
+        li.classList.add('template_item'); 
+
         li.id = `${text.id}`;
 
-        //li.onclick = () => (console.log(`${li.id} sendo clicado`))
-
-        // Criar o conteúdo HTML do LI
+        // Creating LI content
         li.innerHTML = `
             <div class="list-full-title">${text.shortcut}</div>
             <div class="list-subtitle">${text.type_spanish}</div>
@@ -71,44 +68,35 @@ function updateHelpTexts(filteredHelpTexts: helpText[]) {
             console.log(`${li.id} sendo clicado`);
         });
 
-        // Inserir o LI na lista
         templatesList.appendChild(li);
     });
 }
 
-//Devo ter um toggle se tem algum LI selecionado.
-//Se tem algum LI selecionado, a content-body-container-template vai ser visivel
 
-
-// Função para criar e adicionar os templates dinamicamente
+// render helpTexts dinamically
 function renderHelpTexts() {
-    // Selecionar o elemento UL onde os itens serão inseridos
+
     const templatesList = document.querySelector('.templates_list');
 
     if (!templatesList) return; // Certificar-se que o UL existe
-
-    //limpando lista atual
     templatesList.innerHTML = '';
 
-
-    console.log("HelpTexts dentro de renderHelpTexts:", helpTexts)
-    // Iterar sobre os helpTexts e criar os itens da lista
     helpTexts.forEach(text => {
-        // Criar o elemento LI
+
         const li = document.createElement('li');
         li.classList.add('template_item'); // Adicionar a classe
 
-        // Adicionar o ID ao LI
         li.id = `${text.id}`;
 
-        // Criar o conteúdo HTML do LI
         li.innerHTML = `
             <div class="list-full-title">${text.shortcut}</div>
             <div class="list-subtitle">${text.type_spanish}</div>
         `;
 
+        //adding event click on each LI that will open a new window!
         li.addEventListener('click', () => {
-            //open a new WINDOW in TEMPLATE!
+
+           
             const bodyContainer = document.querySelector("#content-body-container")
             const bodyContainerTemplate = document.querySelector("#content-body-container-template")
 
@@ -127,8 +115,7 @@ function renderHelpTexts() {
                 backButton.appendChild(imageInButton)
             }
 
-
-            // Localiza o botão dentro da div
+            // getting button from div
             const button = button1toparea?.querySelector('button');
             if (button) {
                 button.remove();
@@ -137,7 +124,7 @@ function renderHelpTexts() {
             backButton.classList.add("button-header-container");
 
 
-            //adicionando texto do elemento clicado no fullText.
+            //adding helpText to Text Template Area when clicked
             let triggerInput = document.querySelector(".trigger-input input") as HTMLInputElement;
             let bigTextInputTemplateTrigger = document.querySelector(".full-text-trigger");
             let textToPopulateInTemplateTrigger = helpTexts.find((item) => item.id.toString() === li.id.toString());
@@ -146,13 +133,13 @@ function renderHelpTexts() {
                     triggerInput.value = textToPopulateInTemplateTrigger.shortcut
                 }
                 if(bigTextInputTemplateTrigger){
-                    bigTextInputTemplateTrigger.innerHTML = textToPopulateInTemplateTrigger.type_spanish;
+                    bigTextInputTemplateTrigger.append(textToHtmlParagraph(textToPopulateInTemplateTrigger.type_spanish) as HTMLInputElement);
                 }
             }
 
-            //evento de clique da setinha para tras
+            //click event to go back
             backButton.addEventListener('click', () => {
-                //toggling classes
+
                 bodyContainer?.classList.remove("closed")
                 bodyContainerTemplate?.classList.add("closed")
                 imageInButton.src = chrome.runtime.getURL("images/home.png");
@@ -170,19 +157,16 @@ function renderHelpTexts() {
             console.log(`${li.id} sendo clicado`);
         });
 
-        // Inserir o LI na lista
         templatesList.appendChild(li);
     });
 
-    // Atualiza o contador com base no número de templates carregados
+    // updating counter
     counterHelpText = helpTexts.length;
-
-    // Atualiza o contador de templates no DOM
+    // updating DOM
     updateTemplateCounter();
 
 }
 
-// Função para atualizar o contador de templates, vai ser usado depois de renderizado
 function updateTemplateCounter() {
     const templateCounter = document.querySelector(".templateCounter");
     if (templateCounter) {
@@ -191,11 +175,9 @@ function updateTemplateCounter() {
 }
 
 
-//Essa funcao é para ativar a extensao no navegador, em principio vai abrir a extensao deixando apenas o botao
 function toggleExtension() {
 
     const existing_desk_container = document.querySelector("#desk-container");
-
 
 
     if (existing_desk_container) {
@@ -293,12 +275,8 @@ function toggleExtension() {
                         buttonHeaderContainerImg.src = chrome.runtime.getURL("images/home.png");
                     }
 
-                  
-
 
                 }
-
-
 
 
 
@@ -312,77 +290,3 @@ toggleExtension();
 
 
 
-
-/* 
-function toggleExtension() {
-
-    const existingSidebar = document.querySelector("#sidebar-container");
-    
-    if (existingSidebar) {
-        existingSidebar.remove();
-        
-    } else {
-        fetch(chrome.runtime.getURL("src/side_extension.html"))
-            .then(response => {
-                console.log(response);
-                return response.text()})
-            .then(html => {
-                console.log("HTML: ", html)
-                
-                //const sidebarContainer = document.createElement("div");
-                //sidebarContainer.id = "sidebar-container";
-                //sidebarContainer.innerHTML = html;
-                //document.body.appendChild(sidebarContainer);
-                //
-                //const closeButton = document.getElementById("closeButton");
-                //closeButton?.addEventListener("click", () => {
-                //   sidebarContainer.remove();
-                //});
-            })
-            .catch(err => console.error("Erro ao carregar o sidebar.html", err));
-    }
-}
-
-toggleExtension(); 
-*/
-
-
-
-/*
-function toggleSquare(): void {
-    const existingSquare = document.querySelector("#bigSquareID");
-
-    if (existingSquare) {
-        existingSquare.remove();
-        console.log("Quadrado removido");
-    } else {
-        // Cria o quadrado vermelho se não existir
-        const newDiv = document.createElement("div");
-        newDiv.classList.add("big_square");
-        newDiv.id = "bigSquareID";
-        document.body.appendChild(newDiv);
-        console.log("Quadrado criado");
-        
-        const poke_button = document.createElement("button");
-        poke_button.classList.add("pokeButton");
-        poke_button.innerHTML = "CONSULTAR POKEMONS";
-        newDiv.appendChild(poke_button);
-
-        // Ao clicar no botão, envia a mensagem para o background
-        poke_button.onclick = () => {
-            console.log("ENTROU NO poke_button.onclick");
-            
-            chrome.runtime.sendMessage({ action: "getPokemonData" }, (response) => {
-                // Verifica se a resposta foi recebida
-                console.log("Response recebida: ", response);
-
-                if (response && response.success) {
-                    console.log("Dados dos Pokémons:", response.data);
-                } else {
-                    console.log("Erro ao buscar dados dos Pokémons");
-                }
-            });
-        };
-    }
-}
-*/

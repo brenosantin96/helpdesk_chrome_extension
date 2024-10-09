@@ -18,10 +18,6 @@
     overflow: hidden; /* Para esconder o conteúdo até a janela ser aberta */
 }
 
-#desk-container.open {
-    width: 483px; /* 433px + 50px de largura do botão */
-}
-
 #desk-container-toggle-button {
     
     display: flex;
@@ -35,7 +31,11 @@
     z-index: 99999999;
 }
 
-.desk-container-body {
+#desk-container.open {
+    width: 483px; /* 433px + 50px de largura do botão */
+}
+
+.desk-container-body { 
     display: none; /* Inicialmente escondido */
     flex: 1;
     height: 100%;
@@ -44,6 +44,7 @@
     border-radius: 10px;
 }
 
+/* Aplicando unicamente no bodyContainer, desconsiderando o botao */
 #desk-container.open .desk-container-body {
     display: flex; /* Mostra o conteúdo ao abrir a janela */
     flex-direction: column;
@@ -148,18 +149,17 @@
     padding: 0 10px;
 }
 
-.full-text-trigger{
+
+.full-text-trigger {
+    overflow-y: auto; /* Habilita a rolagem vertical */
     margin-top: 5px;
-    min-height: 300px;
-    display: flex;
-    flex: 1;
+    height: 400px; /* Altura fixa */
     border: 1px solid #d8dfe7;
     border-radius: 8px;
     color: rgb(75, 80, 86);
-    padding: 2px 4px 2px 4px;
+    padding: 2px 4px;
     font-size: 12px;
     font-weight: 700;
-
 }
 
 .searchbox-body-container{
@@ -232,6 +232,7 @@
     flex-direction: column; /* Para garantir que a lista ocupe toda a coluna */
     max-height: 400px; /* Defina uma altura máxima para que o scroll funcione */
     overflow-y: auto; /* Habilita o scroll vertical */
+    overflow-x: hidden; /* Habilita o scroll vertical */
     padding-right: 10px; /* Opcional: Para espaçamento entre o scroll e o conteúdo */
     transition: all ease 0.5s;
 }
@@ -246,6 +247,8 @@
     list-style-type: none;
     margin: 0;
     padding: 0;
+    max-width: 381px;
+    text-overflow: ellipsis;
     
 }
 
@@ -282,9 +285,12 @@
 }
 
 .list-subtitle{
+    max-width: 380px;
     padding-left: 5px;
     color: rgb(75, 80, 86);
     font-size: 12px;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .footer-body-container{
