@@ -27,4 +27,10 @@ chrome.runtime.onMessage.addListener((message: any, sender: any, sendResponse: (
     }
 });
 
+var context_id = -1;
+
+
 //
+//1 executar comando de atalho
+//pegar a localizacao do input atual
+//apresentar uma pequena caixa com um search e nesse search 

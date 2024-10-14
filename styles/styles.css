@@ -305,6 +305,59 @@
     font-weight: 600;
 }
 
+.shortcut-box{
+    overflow-y: auto;
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    display: none;
+    height: 400px;
+    width: 350px;
+    border: 1px solid rgb(77, 74, 74);
+    background-color: gainsboro;
+    border-radius: 10px;
+}
+
+
+.shortcut_item{
+    color: rgb(34, 37, 40);
+    padding-left: 4px;
+    margin-top: 1px;
+    margin-bottom: 3px;
+    padding-top: 4px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(233, 238, 244);
+    border-color: rgb(216, 223, 231);
+    text-overflow: ellipsis;
+    text-wrap: wrap;
+    height: 52px;
+    border-radius: 5px;
+}
+
+.shortcut_item:hover{
+    background-color: #ACC1FF;
+    cursor: pointer;
+}
+
+.shortcut-title{
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.shortcut-description{
+    font-size: 9px;
+    font-weight: 400;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limita o texto a 2 linhas */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* Permite a quebra de linha */
+}
+
+
 
 
 

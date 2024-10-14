@@ -256,6 +256,14 @@ function toggleExtension() {
                         })
                     }
 
+                    //Adding button to footer
+                    const footerButton = desk_container.querySelector(".footer-body-container button")
+                    if(footerButton){
+                        footerButton.addEventListener("click", () => {
+                            chrome.commands.onCommand("pressButton")
+                        })
+                    }
+
                     //Adding images
                     // Corrige o caminho da imagem dinamicamente
                     const imageElement = document.querySelector(".svgLupa img") as HTMLImageElement;
@@ -288,5 +296,26 @@ function toggleExtension() {
 toggleExtension();
 
 
+//shortCutToggle
+
+document.addEventListener('keydown', (event) => {
+    // Verifica se o usuário está digitando em um input ou textarea
+    const activeElement = document.activeElement as HTMLElement;
+    if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.tagName === "DIV") {
+        // Captura o valor digitado
+        if (event.key === '/') {
+            const currentInput = activeElement as HTMLInputElement | HTMLTextAreaElement;
+            
+            // Verifica se o valor anterior também era uma barra "/"
+            if (currentInput.value.endsWith('/')) {
+                // Aqui você pode exibir o shortcut-box
+                const shortcutBox = document.querySelector('.shortcut-box') as HTMLElement;
+                if (shortcutBox) {
+                    shortcutBox.style.display = 'block';  // Exibe a caixa de atalhos
+                }
+            }
+        }
+    }
+});
 
 

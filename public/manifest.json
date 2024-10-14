@@ -13,6 +13,12 @@
   "background": {
     "service_worker": "background.js"
   },
+  "commands": {
+    "pressButton" : {
+      "suggested_key" : "Ctrl+Shift+Y",
+      "description" : "This extension is made to improve work of helpdesks technicians"
+    }
+  },
   "action": {},
   "content_scripts": [
     {
