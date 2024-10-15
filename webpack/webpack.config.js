@@ -43,6 +43,7 @@ module.exports = {
       patterns: [
         { from: ".", to: ".", context: "public" },  // Copia o conteúdo da pasta public para dist
         { from: "src/side_extension.html", to: "side_extension.html" },  // Copia o HTML para dist
+        { from: "src/shortcutComponent.html", to: "shortcutComponent.html" },  // Copia o HTML para dist
         { from: "images", to: "images" },  // Copia a pasta de imagens para dist/images
       ],
     }),

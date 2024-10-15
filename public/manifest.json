@@ -38,6 +38,7 @@
       "resources": [
         "styles.css",
         "side_extension.html",
+        "shortcutComponent.html",
         "images/search_icon_png.png",
         "images/search_icon.svg",
         "images/down-arrow-key.png",

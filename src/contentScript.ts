@@ -43,7 +43,7 @@ function handleOnSearch(element: any, helptexts: helpText[]): helpText[] {
 
 // update templates by search
 function updateHelpTexts(filteredHelpTexts: helpText[]) {
-    
+
     const templatesList = document.querySelector('.templates_list');
 
     if (!templatesList) return;
@@ -54,7 +54,7 @@ function updateHelpTexts(filteredHelpTexts: helpText[]) {
     filteredHelpTexts.forEach(text => {
 
         const li = document.createElement('li');
-        li.classList.add('template_item'); 
+        li.classList.add('template_item');
 
         li.id = `${text.id}`;
 
@@ -96,7 +96,7 @@ function renderHelpTexts() {
         //adding event click on each LI that will open a new window!
         li.addEventListener('click', () => {
 
-           
+
             const bodyContainer = document.querySelector("#content-body-container")
             const bodyContainerTemplate = document.querySelector("#content-body-container-template")
 
@@ -128,11 +128,11 @@ function renderHelpTexts() {
             let triggerInput = document.querySelector(".trigger-input input") as HTMLInputElement;
             let bigTextInputTemplateTrigger = document.querySelector(".full-text-trigger");
             let textToPopulateInTemplateTrigger = helpTexts.find((item) => item.id.toString() === li.id.toString());
-            if(textToPopulateInTemplateTrigger){
-                if(triggerInput){
+            if (textToPopulateInTemplateTrigger) {
+                if (triggerInput) {
                     triggerInput.value = textToPopulateInTemplateTrigger.shortcut
                 }
-                if(bigTextInputTemplateTrigger){
+                if (bigTextInputTemplateTrigger) {
                     bigTextInputTemplateTrigger.append(textToHtmlParagraph(textToPopulateInTemplateTrigger.type_spanish) as HTMLInputElement);
                 }
             }
@@ -144,10 +144,10 @@ function renderHelpTexts() {
                 bodyContainerTemplate?.classList.add("closed")
                 imageInButton.src = chrome.runtime.getURL("images/home.png");
 
-                if(triggerInput){
+                if (triggerInput) {
                     triggerInput.value = ""
                 }
-                if(bigTextInputTemplateTrigger){
+                if (bigTextInputTemplateTrigger) {
                     bigTextInputTemplateTrigger.innerHTML = "";
                 }
 
@@ -180,22 +180,40 @@ function toggleExtension() {
     const existing_desk_container = document.querySelector("#desk-container");
 
 
+    fetch(chrome.runtime.getURL("shortcutComponent.html"))
+        .then(response => {
+            console.log("Response: ", response);
+            return response.text()
+        })
+        .then(html => {
+            console.log("HTML: ", html)
+            const existing_shortcut_window = document.querySelector(".shortcut-box");
+            if (existing_shortcut_window) {
+                existing_shortcut_window.remove()
+            } else {
+                const shortcut_box = document.createElement("div");
+                shortcut_box.innerHTML = html
+                document.body.append(shortcut_box)
+            }
+
+        })
+        .catch(error => console.log(error))
+
+
+
     if (existing_desk_container) {
         existing_desk_container.remove();
 
     } else {
         fetch(chrome.runtime.getURL("side_extension.html"))
             .then(response => {
-                console.log(response);
                 return response.text()
             })
             .then(html => {
 
-                console.log("HTML: ", html)
                 const container = document.createElement("div");
                 container.innerHTML = html;
                 document.body.appendChild(container);
-
 
                 //adding css to the file
                 const link = document.createElement("link");
@@ -237,14 +255,14 @@ function toggleExtension() {
 
                         const templates_expanded = document.querySelector("#templatesDiv") as HTMLElement;
                         arrowKeyTemplateButton.addEventListener("click", () => {
-                            if(templates_expanded){
+                            if (templates_expanded) {
 
                                 templates_expanded.classList.toggle("templates_closed"); // Alterna a classe 'templates_closed' e "templates_expanded"
-                    
-                                
+
+
 
                                 const iconToggler = document.querySelector(".templates_closed")
-                                if(iconToggler){
+                                if (iconToggler) {
                                     imageElementArrowKey.src = chrome.runtime.getURL("images/right-arrow-key.png");
                                     templates_expanded.style.right = "-900px";  // Modifica o estilo inline
                                 } else {
@@ -258,7 +276,7 @@ function toggleExtension() {
 
                     //Adding button to footer
                     const footerButton = desk_container.querySelector(".footer-body-container button")
-                    if(footerButton){
+                    if (footerButton) {
                         footerButton.addEventListener("click", () => {
                             chrome.commands.onCommand("pressButton")
                         })
@@ -296,26 +314,107 @@ function toggleExtension() {
 toggleExtension();
 
 
-//shortCutToggle
+// Tipo para armazenar a posição da janela de atalho
+type ShortcutWindowPositionType = {
+    x: number | null;
+    y: number | null;
+}
 
+const shortcutWindowPosition: ShortcutWindowPositionType = {
+    x: null,
+    y: null
+}
+
+// Função para fechar a janela de atalhos
+const handleCloseShortcutWindow = () => {
+    shortcutWindowPosition.x = null;
+    shortcutWindowPosition.y = null;
+    toggleShortcutBox(shortcutWindowPosition.x, shortcutWindowPosition.y, false);  // Fecha a shortcut-box
+
+}
+
+// Função para detectar clique fora da shortcut-box
+const clickOutsideToCloseShortcutWindow = () => {
+    
+
+    // Adiciona um event listener para cliques na página
+    document.addEventListener('click', (event : MouseEvent) => {
+
+        const shortcutBox = document.querySelector('.shortcut-box') as HTMLElement;
+
+        const rect = shortcutBox?.getBoundingClientRect();
+
+
+        console.log("Rect da shortcut-box:", rect);  // Verifica as coordenadas da shortcut-box
+        console.log("Posição do clique:", event.clientX, event.clientY);  // Verifica a posição do clique
+
+
+        // Verifica se o clique foi fora da área da shortcut-box
+        if (rect && 
+            (event.clientX < rect.left || event.clientX > rect.right || 
+             event.clientY < rect.top || event.clientY > rect.bottom)) {
+
+            // O clique foi fora da shortcut-box, então fecha a janela
+            console.log("Clique fora da shortcut-box, fechando a janela.");
+            handleCloseShortcutWindow();
+        }
+    });
+}
+
+clickOutsideToCloseShortcutWindow();
+
+//funcao vai receber se o elemento ta ativo, 
+
+// Função de toggle para a shortcut box
+export function toggleShortcutBox(x: number | null, y: number | null, isActive: boolean) {
+    const shortcutBox = document.querySelector('.shortcut-box') as HTMLElement;
+
+    if (shortcutBox) {
+        if (isActive && x !== null && y !== null) {
+            shortcutBox.style.display = 'block'; // Exibe a shortcut box
+            shortcutBox.style.position = 'absolute';
+            shortcutBox.style.top = `${y + 5}px`;  // Posiciona 5px abaixo do elemento
+            shortcutBox.style.left = `${x}px`;     // Alinha horizontalmente com o elemento
+        } else {
+            shortcutBox.style.display = 'none';    // Esconde a shortcut box
+        }
+    }
+}
+
+// Evento de keydown para capturar "//" e exibir a caixa de atalhos
 document.addEventListener('keydown', (event) => {
-    // Verifica se o usuário está digitando em um input ou textarea
     const activeElement = document.activeElement as HTMLElement;
-    if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.tagName === "DIV") {
-        // Captura o valor digitado
+
+    if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.getAttribute('contenteditable') === 'true') {
+        let currentInputValue = '';
+
+        // Verifica inputs e textareas
+        if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
+            currentInputValue = (activeElement as HTMLInputElement | HTMLTextAreaElement).value;
+        }
+        // Verifica divs contenteditable
+        else if (activeElement.getAttribute('contenteditable') === 'true') {
+            currentInputValue = activeElement.innerText || activeElement.textContent || '';
+        }
+
+        // Verifica se o usuário pressionou "/"
         if (event.key === '/') {
-            const currentInput = activeElement as HTMLInputElement | HTMLTextAreaElement;
-            
-            // Verifica se o valor anterior também era uma barra "/"
-            if (currentInput.value.endsWith('/')) {
-                // Aqui você pode exibir o shortcut-box
-                const shortcutBox = document.querySelector('.shortcut-box') as HTMLElement;
-                if (shortcutBox) {
-                    shortcutBox.style.display = 'block';  // Exibe a caixa de atalhos
-                }
+            // Verifica se o valor anterior era uma "/"
+            if (currentInputValue.endsWith('/')) {
+                // Obtém as coordenadas do elemento ativo
+                const rect = activeElement.getBoundingClientRect();
+
+                // Armazena a posição para a shortcut box
+                shortcutWindowPosition.x = rect.left;
+                shortcutWindowPosition.y = rect.bottom;
+
+                // Exibe a shortcut box com a nova posição
+                toggleShortcutBox(shortcutWindowPosition.x, shortcutWindowPosition.y, true);
             }
         }
     }
 });
 
 
+//corrigir bug que aparece os helpTexts apenas no background!
+//controlar posicionamento de onde vai ser criado, vou ter que criar o top y e left x.....
