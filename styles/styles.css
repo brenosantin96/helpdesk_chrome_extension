@@ -359,7 +359,13 @@
 }
 
 
+.hiddenShortcutBox{
+    display: none;
+}
 
+.showedShortcutBox{
+    display: block;
+}
 
 
 

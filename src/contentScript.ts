@@ -1,4 +1,4 @@
-import { textToHtmlParagraph } from './utils';
+import { observeElement, textToHtmlParagraph } from './utils';
 
 
 type helpText = {
@@ -28,7 +28,6 @@ function firstGetTexts() {
 }
 
 firstGetTexts();
-
 
 function handleOnSearch(element: any, helptexts: helpText[]): helpText[] {
 
@@ -182,18 +181,25 @@ function toggleExtension() {
 
     fetch(chrome.runtime.getURL("shortcutComponent.html"))
         .then(response => {
-            console.log("Response: ", response);
             return response.text()
         })
         .then(html => {
-            console.log("HTML: ", html)
             const existing_shortcut_window = document.querySelector(".shortcut-box");
             if (existing_shortcut_window) {
                 existing_shortcut_window.remove()
             } else {
-                const shortcut_box = document.createElement("div");
-                shortcut_box.innerHTML = html
-                document.body.append(shortcut_box)
+                const shortcutBoxHtml = document.createElement("div");
+                shortcutBoxHtml.innerHTML = html
+                const shortcutBox = shortcutBoxHtml.querySelector(".shortcut-box")
+                if (shortcutBox) {
+                    document.body.append(shortcutBox)
+
+                    // Chama observeElement apenas depois que o .shortcut-box foi adicionado ao DOM
+                    observeElement('.shortcut-box', (element) => {
+                        console.log('Elemento com a classe .showedShortcutBox foi adicionado:', element);
+                        renderHelpTextsShortcutWindow();
+                    });
+                }
             }
 
         })
@@ -335,27 +341,23 @@ const handleCloseShortcutWindow = () => {
 
 // Função para detectar clique fora da shortcut-box
 const clickOutsideToCloseShortcutWindow = () => {
-    
+
 
     // Adiciona um event listener para cliques na página
-    document.addEventListener('click', (event : MouseEvent) => {
+    document.addEventListener('click', (event: MouseEvent) => {
 
         const shortcutBox = document.querySelector('.shortcut-box') as HTMLElement;
 
         const rect = shortcutBox?.getBoundingClientRect();
 
-
-        console.log("Rect da shortcut-box:", rect);  // Verifica as coordenadas da shortcut-box
-        console.log("Posição do clique:", event.clientX, event.clientY);  // Verifica a posição do clique
-
-
         // Verifica se o clique foi fora da área da shortcut-box
-        if (rect && 
-            (event.clientX < rect.left || event.clientX > rect.right || 
-             event.clientY < rect.top || event.clientY > rect.bottom)) {
+        if (rect &&
+            (event.clientX < rect.left || event.clientX > rect.right ||
+                event.clientY < rect.top || event.clientY > rect.bottom)) {
 
             // O clique foi fora da shortcut-box, então fecha a janela
-            console.log("Clique fora da shortcut-box, fechando a janela.");
+            shortcutBox.classList.add("hiddenShortcutBox");
+            shortcutBox.classList.remove("showedShortcutBox");
             handleCloseShortcutWindow();
         }
     });
@@ -371,6 +373,8 @@ export function toggleShortcutBox(x: number | null, y: number | null, isActive: 
 
     if (shortcutBox) {
         if (isActive && x !== null && y !== null) {
+            shortcutBox.classList.remove("hiddenShortcutBox")
+            shortcutBox.classList.add("showedShortcutBox")
             shortcutBox.style.display = 'block'; // Exibe a shortcut box
             shortcutBox.style.position = 'absolute';
             shortcutBox.style.top = `${y + 5}px`;  // Posiciona 5px abaixo do elemento
@@ -416,5 +420,42 @@ document.addEventListener('keydown', (event) => {
 });
 
 
-//corrigir bug que aparece os helpTexts apenas no background!
-//controlar posicionamento de onde vai ser criado, vou ter que criar o top y e left x.....
+// render helpTexts dinamically
+function renderHelpTextsShortcutWindow() {
+
+    const templatesShortcutList = document.querySelector('.templates-list-shortcut-box');
+
+    if (!templatesShortcutList) return; // Certificar-se que o UL existe
+    templatesShortcutList.innerHTML = '';
+
+    helpTexts.forEach(text => {
+
+        const li = document.createElement('li');
+        li.classList.add('shortcut_item'); // Adicionar a classe
+
+        li.id = `${text.id}`;
+
+        li.innerHTML = `
+            <div class="shortcut-title">${text.shortcut}</div>
+            <div class="shortcut-description">${text.type_spanish}</div>
+        `;
+
+        //adding event click on each LI that will open a new window!
+        li.addEventListener('click', () => {
+            console.log(`${li.id} sendo clicado`);
+        });
+
+        templatesShortcutList.appendChild(li);
+    });
+}
+
+
+//document.addEventListener("keydown", (event) => {
+//    const activeElement = document.activeElement as HTMLElement;
+
+
+//})
+
+
+//
+//ao escrever no input, vou ter que ir filtrando os textos que possui no helpDesk!
