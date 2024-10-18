@@ -9,7 +9,7 @@ type helpText = {
 }
 
 
-let helpTexts: helpText[] = []
+let helpTexts: helpText[] = [];
 let counterHelpText = 0;
 
 function firstGetTexts() {
@@ -29,15 +29,42 @@ function firstGetTexts() {
 
 firstGetTexts();
 
-function handleOnSearch(element: any, helptexts: helpText[]): helpText[] {
 
-    // Filtering texts to match shortcut
+function handleOnSearch(element: HTMLInputElement | HTMLDivElement, helptexts: helpText[]): helpText[] {
+
+    let searchText: string = '';
+
+    // Verifica se o elemento é uma DIV editável
+    if (element instanceof HTMLDivElement && element.getAttribute('contenteditable') === 'true') {
+        // Pega o texto da DIV
+        searchText = element.innerText.toLowerCase();
+        // Remove os primeiros dois caracteres `//`
+        if (searchText.startsWith('//')) {
+            searchText = searchText.slice(2);  // Atribuindo o valor de volta
+        }
+    }
+
+    // Verifica se o elemento é um input (tipo <input> ou <textarea>)
+    if (element instanceof HTMLInputElement) {
+        // Pega o valor do input
+        searchText = element.value.toLowerCase();
+         // Remove os primeiros dois caracteres `//`
+         if (searchText.startsWith('//')) {
+            searchText = searchText.slice(2);  // Atribuindo o valor de volta
+        }
+        console.log("searchText depois de pegar informacao do input: ", searchText)
+    }
+
+    console.log("HelpTexts antes de serem filtrados: ",helpTexts )
+
+    // Filtra os textos de ajuda com base no atalho inserido
     const filteredHelpTexts = helptexts.filter(helpText =>
-        helpText.shortcut.toLowerCase().includes(element.value)
+        helpText.shortcut.toLowerCase().includes(searchText)
     );
 
-    return filteredHelpTexts;
+    console.log("Textos Filtrados no handleOnSearch: ", filteredHelpTexts)
 
+    return filteredHelpTexts;
 }
 
 // update templates by search
@@ -196,7 +223,6 @@ function toggleExtension() {
 
                     // Chama observeElement apenas depois que o .shortcut-box foi adicionado ao DOM
                     observeElement('.shortcut-box', (element) => {
-                        console.log('Elemento com a classe .showedShortcutBox foi adicionado:', element);
                         renderHelpTextsShortcutWindow();
                     });
                 }
@@ -246,7 +272,7 @@ function toggleExtension() {
                     });
 
                     // Alteração na função de busca para disparar com o evento 'input'
-                    const searchbox = desk_container.querySelector(".searchbox-body-container-text");
+                    const searchbox = desk_container.querySelector(".searchbox-body-container-text") as HTMLInputElement;
                     if (searchbox) {
                         searchbox.addEventListener("input", (event) => {
                             const searchTerm = (event.target as HTMLInputElement).value.toLowerCase();
@@ -402,6 +428,7 @@ document.addEventListener('keydown', (event) => {
         }
 
         // Verifica se o usuário pressionou "/"
+
         if (event.key === '/') {
             // Verifica se o valor anterior era uma "/"
             if (currentInputValue.endsWith('/')) {
@@ -414,8 +441,36 @@ document.addEventListener('keydown', (event) => {
 
                 // Exibe a shortcut box com a nova posição
                 toggleShortcutBox(shortcutWindowPosition.x, shortcutWindowPosition.y, true);
+
             }
         }
+
+        if (activeElement instanceof (HTMLInputElement) || activeElement instanceof (HTMLDivElement)) {
+            if (currentInputValue.length > 2) {
+                //console.log("ACTIVE ELEMENT: ", activeElement)
+                if(shortcutWindowPosition.x !== null){
+
+                    if(activeElement instanceof (HTMLInputElement)){
+                        activeElement.addEventListener("input", (event) => {
+                            const filteredHelpTexts = handleOnSearch(activeElement, helpTexts);
+                            updateHelpTextsShortcutWindow(filteredHelpTexts);
+                        });
+                    }
+
+                    if(activeElement instanceof (HTMLDivElement)){
+                        activeElement.addEventListener('input', (event) => {
+                            const filteredHelpTexts = handleOnSearch(activeElement, helpTexts);
+                            updateHelpTextsShortcutWindow(filteredHelpTexts);
+                        });
+                    }
+
+                    //const filteredHelpTexts = handleOnSearch2(activeElement, helpTexts);
+                    //updateHelpTextsShortcutWindow(filteredHelpTexts);
+
+                }
+            }
+        }
+
     }
 });
 
@@ -441,6 +496,40 @@ function renderHelpTextsShortcutWindow() {
         `;
 
         //adding event click on each LI that will open a new window!
+        li.addEventListener('click', () => {
+            console.log(`${li.id} sendo clicado`);
+        });
+
+        templatesShortcutList.appendChild(li);
+    });
+}
+
+
+// update templates by search in active element
+function updateHelpTextsShortcutWindow(filteredHelpTexts: helpText[]) {
+
+    console.log("HELPTEXTS sem estar filtrado: ", helpTexts)
+    console.log("filteredHelpTexts RECEBIDOS: ", filteredHelpTexts)
+    const templatesShortcutList = document.querySelector('.templates-list-shortcut-box');
+
+    if (!templatesShortcutList) return;
+
+    templatesShortcutList.innerHTML = '';
+
+    // Iterate in helpTexts
+    filteredHelpTexts.forEach(text => {
+
+        const li = document.createElement('li');
+        li.classList.add('shortcut_item');
+
+        li.id = `${text.id}`;
+
+        // Creating LI content
+        li.innerHTML = `
+            <div class="shortcut-title">${text.shortcut}</div>
+            <div class="shortcut-description">${text.type_spanish}</div>
+        `;
+
         li.addEventListener('click', () => {
             console.log(`${li.id} sendo clicado`);
         });
