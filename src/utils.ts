@@ -44,6 +44,51 @@ export function observeElement(selector: string, callback: (element: HTMLElement
   }
 }
 
+export function getCaretCoordinates(element: HTMLElement) {
+
+  let x = 0, y = 0;
+
+  //Corrigir para HTMLTEXTAREA e HTMLInputElement
+
+  if (element instanceof HTMLTextAreaElement || element instanceof HTMLInputElement) {
+      const range = element.selectionStart;
+
+      // Cria um range temporário para pegar a posição do caret
+      const div = document.createElement('div');
+      const copyStyle = getComputedStyle(element);
+      for (const prop of copyStyle) {
+          div.style[prop as any] = copyStyle[prop as any];
+      }
+
+      div.textContent = element.value.slice(0, range as number);
+      const span = document.createElement('span');
+      span.textContent = element.value.slice(range as number) || '.';
+      div.appendChild(span);
+
+      document.body.appendChild(div);
+      const rect = span.getBoundingClientRect();
+      x = rect.left;
+      y = rect.top;
+
+      document.body.removeChild(div);
+  } else if (element.getAttribute('contenteditable') === 'true') {
+
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0).cloneRange();
+          const rects = range.getClientRects();
+          if (rects.length > 0) {
+              const rect = rects[0];
+              x = rect.left;
+              y = rect.top;
+          }
+      }
+  }
+
+  return { x, y };
+}
+
+
 
 
 

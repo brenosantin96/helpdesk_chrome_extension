@@ -1,4 +1,4 @@
-import { observeElement, textToHtmlParagraph } from './utils';
+import { getCaretCoordinates, observeElement, textToHtmlParagraph } from './utils';
 
 
 type helpText = {
@@ -12,7 +12,12 @@ type helpText = {
 let helpTexts: helpText[] = [];
 let counterHelpText = 0;
 
+let activeElement : HTMLElement | null = null;
+
 function firstGetTexts() {
+
+    //Adicionar algo para checar se o texto ja nao esta no storage do navegador
+
     if (helpTexts.length === 0) {
         //sending message to background.ts to get all text Types
         chrome.runtime.sendMessage({ type: 'getHelpTexts' }, (response) => {
@@ -52,17 +57,12 @@ function handleOnSearch(element: HTMLInputElement | HTMLDivElement, helptexts: h
          if (searchText.startsWith('//')) {
             searchText = searchText.slice(2);  // Atribuindo o valor de volta
         }
-        console.log("searchText depois de pegar informacao do input: ", searchText)
     }
-
-    console.log("HelpTexts antes de serem filtrados: ",helpTexts )
 
     // Filtra os textos de ajuda com base no atalho inserido
     const filteredHelpTexts = helptexts.filter(helpText =>
         helpText.shortcut.toLowerCase().includes(searchText)
     );
-
-    console.log("Textos Filtrados no handleOnSearch: ", filteredHelpTexts)
 
     return filteredHelpTexts;
 }
@@ -361,7 +361,7 @@ const shortcutWindowPosition: ShortcutWindowPositionType = {
 const handleCloseShortcutWindow = () => {
     shortcutWindowPosition.x = null;
     shortcutWindowPosition.y = null;
-    toggleShortcutBox(shortcutWindowPosition.x, shortcutWindowPosition.y, false);  // Fecha a shortcut-box
+    toggleShortcutBox(false);  // Fecha a shortcut-box
 
 }
 
@@ -394,17 +394,20 @@ clickOutsideToCloseShortcutWindow();
 //funcao vai receber se o elemento ta ativo, 
 
 // Função de toggle para a shortcut box
-export function toggleShortcutBox(x: number | null, y: number | null, isActive: boolean) {
+export function toggleShortcutBox(isActive: boolean) {
     const shortcutBox = document.querySelector('.shortcut-box') as HTMLElement;
 
     if (shortcutBox) {
-        if (isActive && x !== null && y !== null) {
-            shortcutBox.classList.remove("hiddenShortcutBox")
-            shortcutBox.classList.add("showedShortcutBox")
-            shortcutBox.style.display = 'block'; // Exibe a shortcut box
+        if (isActive) {
+            const activeElement = document.activeElement as HTMLElement;
+            const { x, y } = getCaretCoordinates(activeElement);
+
+            shortcutBox.classList.remove("hiddenShortcutBox");
+            shortcutBox.classList.add("showedShortcutBox");
+            shortcutBox.style.display = 'block';  // Exibe a shortcut box
             shortcutBox.style.position = 'absolute';
-            shortcutBox.style.top = `${y + 5}px`;  // Posiciona 5px abaixo do elemento
-            shortcutBox.style.left = `${x}px`;     // Alinha horizontalmente com o elemento
+            shortcutBox.style.top = `${y + 60}px`;  // 60 pixels abaixo do caret
+            shortcutBox.style.left = `${x}px`;     // Posiciona horizontalmente baseado no caret
         } else {
             shortcutBox.style.display = 'none';    // Esconde a shortcut box
         }
@@ -413,7 +416,9 @@ export function toggleShortcutBox(x: number | null, y: number | null, isActive: 
 
 // Evento de keydown para capturar "//" e exibir a caixa de atalhos
 document.addEventListener('keydown', (event) => {
-    const activeElement = document.activeElement as HTMLElement;
+
+     activeElement = document.activeElement as HTMLElement;
+
 
     if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.getAttribute('contenteditable') === 'true') {
         let currentInputValue = '';
@@ -432,6 +437,10 @@ document.addEventListener('keydown', (event) => {
         if (event.key === '/') {
             // Verifica se o valor anterior era uma "/"
             if (currentInputValue.endsWith('/')) {
+
+                //get ActiveElement
+                console.log("ACTIVE ELEMENT when pressed //: ", activeElement)
+
                 // Obtém as coordenadas do elemento ativo
                 const rect = activeElement.getBoundingClientRect();
 
@@ -440,26 +449,25 @@ document.addEventListener('keydown', (event) => {
                 shortcutWindowPosition.y = rect.bottom;
 
                 // Exibe a shortcut box com a nova posição
-                toggleShortcutBox(shortcutWindowPosition.x, shortcutWindowPosition.y, true);
+                toggleShortcutBox(true);
 
             }
         }
 
         if (activeElement instanceof (HTMLInputElement) || activeElement instanceof (HTMLDivElement)) {
             if (currentInputValue.length > 2) {
-                //console.log("ACTIVE ELEMENT: ", activeElement)
                 if(shortcutWindowPosition.x !== null){
 
                     if(activeElement instanceof (HTMLInputElement)){
                         activeElement.addEventListener("input", (event) => {
-                            const filteredHelpTexts = handleOnSearch(activeElement, helpTexts);
+                            const filteredHelpTexts = handleOnSearch(activeElement as HTMLInputElement, helpTexts);
                             updateHelpTextsShortcutWindow(filteredHelpTexts);
                         });
                     }
 
                     if(activeElement instanceof (HTMLDivElement)){
                         activeElement.addEventListener('input', (event) => {
-                            const filteredHelpTexts = handleOnSearch(activeElement, helpTexts);
+                            const filteredHelpTexts = handleOnSearch(activeElement as HTMLInputElement, helpTexts);
                             updateHelpTextsShortcutWindow(filteredHelpTexts);
                         });
                     }
@@ -497,19 +505,43 @@ function renderHelpTextsShortcutWindow() {
 
         //adding event click on each LI that will open a new window!
         li.addEventListener('click', () => {
-            console.log(`${li.id} sendo clicado`);
+
+            // Adiciona o texto ao elemento que tem o cursor ativo
+            addTextToActiveElementWhenClicked(activeElement as HTMLElement, text.type_spanish);
+
+            //closeShortcutBox
+            handleCloseShortcutWindow();
+
         });
 
         templatesShortcutList.appendChild(li);
     });
 }
 
+function addTextToActiveElementWhenClicked(element: HTMLElement, textToAdd: string) {
+    // Verifica se o elemento é um input ou textarea
+    if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+        
+        //inserte o texto no elemento
+        element.value = textToAdd;
+        
+    } 
+
+    // Verifica se o elemento é uma div com contenteditable
+    else if (element instanceof HTMLDivElement && element.getAttribute('contenteditable') === 'true') {
+       
+        element.innerHTML = textToAdd;
+
+
+    } else {
+        console.log("Element not edittable");
+    }
+}
+
 
 // update templates by search in active element
 function updateHelpTextsShortcutWindow(filteredHelpTexts: helpText[]) {
 
-    console.log("HELPTEXTS sem estar filtrado: ", helpTexts)
-    console.log("filteredHelpTexts RECEBIDOS: ", filteredHelpTexts)
     const templatesShortcutList = document.querySelector('.templates-list-shortcut-box');
 
     if (!templatesShortcutList) return;
@@ -531,7 +563,13 @@ function updateHelpTextsShortcutWindow(filteredHelpTexts: helpText[]) {
         `;
 
         li.addEventListener('click', () => {
-            console.log(`${li.id} sendo clicado`);
+            
+            // Adiciona o texto ao elemento que tem o cursor ativo
+            addTextToActiveElementWhenClicked(activeElement as HTMLElement, text.type_spanish);
+
+            //closeShortcutBox
+            handleCloseShortcutWindow();
+
         });
 
         templatesShortcutList.appendChild(li);
@@ -539,12 +577,4 @@ function updateHelpTextsShortcutWindow(filteredHelpTexts: helpText[]) {
 }
 
 
-//document.addEventListener("keydown", (event) => {
-//    const activeElement = document.activeElement as HTMLElement;
 
-
-//})
-
-
-//
-//ao escrever no input, vou ter que ir filtrando os textos que possui no helpDesk!
