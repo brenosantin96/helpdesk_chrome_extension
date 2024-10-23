@@ -22,9 +22,7 @@ export const textToHtmlParagraph = (text: string): HTMLElement => {
 // Função para monitorar quando um elemento com uma classe ou ID específico for adicionado
 export function observeElement(selector: string, callback: (element: HTMLElement) => void) {
   const targetElement = document.querySelector(selector) as HTMLElement;
-  console.log("targetElement", targetElement);
   if (targetElement) {
-    console.log("targetElement", targetElement);
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         // Verifica se a mutação foi uma alteração de atributo (classe)
@@ -47,32 +45,36 @@ export function observeElement(selector: string, callback: (element: HTMLElement
 export function getCaretCoordinates(element: HTMLElement) {
 
   let x = 0, y = 0;
+  console.log("Elemento que dispoe do cursor: ", element)
 
-  //Corrigir para HTMLTEXTAREA e HTMLInputElement
-
+  
   if (element instanceof HTMLTextAreaElement || element instanceof HTMLInputElement) {
-      const range = element.selectionStart;
-
-      // Cria um range temporário para pegar a posição do caret
-      const div = document.createElement('div');
-      const copyStyle = getComputedStyle(element);
-      for (const prop of copyStyle) {
-          div.style[prop as any] = copyStyle[prop as any];
-      }
-
-      div.textContent = element.value.slice(0, range as number);
+      const { selectionStart } = element;
+      
+      // Cria um span invisível temporário com as mesmas propriedades
       const span = document.createElement('span');
-      span.textContent = element.value.slice(range as number) || '.';
-      div.appendChild(span);
+      console.log("SPAN criado: ", span)
+      const style = window.getComputedStyle(element);
+      console.log("COMPUTED STYLE APLICADO NO SPAN: ", span)
 
-      document.body.appendChild(div);
+      span.style.font = style.font;
+      span.classList.add("caretText1")
+      span.style.fontSize = style.fontSize;
+      span.style.visibility = 'hidden'; // invisível, mas existe no DOM
+      span.style.whiteSpace = 'pre'; // preserva espaços
+
+      // Copia o valor até a posição do caret
+      span.textContent = element.value.substring(0, selectionStart as number);
+      document.body.appendChild(span);
+
+      // Pega a posição do span
       const rect = span.getBoundingClientRect();
       x = rect.left;
-      y = rect.top;
+      y = rect.top + window.scrollY; // Corrige para rolagem da página
 
-      document.body.removeChild(div);
-  } else if (element.getAttribute('contenteditable') === 'true') {
-
+      document.body.removeChild(span);
+  } 
+  else if (element.getAttribute('contenteditable') === 'true') {
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0) {
           const range = selection.getRangeAt(0).cloneRange();
@@ -80,13 +82,14 @@ export function getCaretCoordinates(element: HTMLElement) {
           if (rects.length > 0) {
               const rect = rects[0];
               x = rect.left;
-              y = rect.top;
+              y = rect.top + window.scrollY;
           }
       }
   }
 
   return { x, y };
 }
+
 
 
 

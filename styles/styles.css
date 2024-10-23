@@ -1,10 +1,16 @@
+:root {
+    /* See https://stackoverflow.com/a/491052 about why we set 2147483647 as the max number of z-index. */
+    --helpdesk-max-zindex: 2147483647;
+  
+    }
+
 * {
     box-sizing: border-box;
 }
 
 #desk-container {
     position: fixed;
-    z-index: 99999999;
+    z-index: var(--helpdesk-max-zindex);
     top: 50%; /* Para centralizar verticalmente */
     right: 0;
     transform: translateY(-50%); /* Ajusta o container para ficar centralizado */
@@ -316,7 +322,7 @@
     border: 1px solid rgb(77, 74, 74);
     background-color: gainsboro;
     border-radius: 10px;
-    z-index: 50;
+    z-index: var(--helpdesk-max-zindex);
 }
 
 
@@ -369,88 +375,3 @@
 
 
 
-
-  
-
-
-/* 
-
---magical-gray-00: #F4F7FB;
---magical-primary-00: #EEF4FF;
---magical-primary-10: #D2E1FF;
---magical-primary-20: #ACC1FF;
---magical-primary-40: #576BFF;
---magical-primary-50: #2B37FF;
---magical-primary-60: #0000FF;
---magical-primary-70: #0004D3;
---magical-primary-80: #00059A;
---magical-primary-90: #000457;
-
-    --magical-primary-00: #EEF4FF;
-    --magical-primary-10: #D2E1FF;
-    --magical-primary-20: #ACC1FF;
-    --magical-primary-40: #576BFF;
-    --magical-primary-50: #2B37FF;
-    --magical-primary-60: #0000FF;
-    --magical-primary-70: #0004D3;
-    --magical-primary-80: #00059A;
-    --magical-primary-90: #000457;
-    --magical-secondary-00: var(--magical-green-00);
-    --magical-secondary-10: var(--magical-green-10);
-    --magical-secondary-20: #AFFBA3;
-    --magical-secondary-30: #83F175;
-    --magical-secondary-50: #2AC720;
-    --magical-secondary-60: var(--magical-green-60);
-    --magical-secondary-70: #008201;
-    --magical-secondary-80: #005A04;
-    --magical-gray-80: #222528;
-    --magical-gray-70: #323539;
-    --magical-gray-60: #4B5056;
-    --magical-gray-50: #6F747C;
-    --magical-gray-40: #969DA6;
-    --magical-gray-30: #BBC2CB;
-    --magical-gray-20: #D8DFE7;
-    --magical-gray-10: #E9EEF4;
-    --magical-gray-00: #F4F7FB;
-    --magical-blue-00: #F5F5FF;
-    --magical-green-00: #F1FFEB;
-    --magical-green-10: #D7FFCF;
-    --magical-green-60: #06AA00;
-    --magical-green-70: #008201;
-    --magical-green-80: #005A04;
-    --magical-new-green-10: #F6FBEE;
-    --magical-new-green-20: #E6FFC6;
-    --magical-new-green-30: #CBFF87;
-    --magical-new-green-40: #AFFF4A;
-    --magical-new-green-80: #00990F;
-    --magical-new-green-90: #0A6925;
-    --magical-red-00: #FFE7E7;
-    --magical-red-10: #FFD1D1;
-    --magical-red-20: #FFABAB;
-    --magical-red-30: #FF7676;
-    --magical-red-40: #FF3939;
-    --magical-red-50: #FF0000;
-    --magical-red-60: #CE0000;
-    --magical-red-70: #9B0000;
-    --magical-red-80: #680303;
-    --magical-red-90: #360606;
-    --magical-orange-00: #FDEAD9;
-    --magical-orange-10: #FFE0B5;
-    --magical-orange-20: #FFD382;
-    --magical-orange-30: #FFC543;
-    --magical-orange-40: #FFB800;
-    --magical-orange-60: #B25900;
-    --magical-orange-70: #883904;
-    --magical-orange-80: #5F240A;
-    --magical-tag-red-purple: #F9DCF4;
-    --magical-tag-purple: #EBE3FC;
-    --magical-tag-gray: #E9EEF4;
-    --magical-tag-blue: #D6EFFC;
-    --magical-tag-teal: #CCF3E9;
-    --magical-tag-green: #D9F5C8;
-    --magical-tag-yellow: #F7F9B8;
-    --magical-tag-orange: #FBEABC;
-    --magical-tag-red-orange: #F9E3D7;
-    --magical-tag-red: #F9DEE5;
-
-*/

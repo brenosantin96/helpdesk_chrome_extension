@@ -1,5 +1,6 @@
 import { getCaretCoordinates, observeElement, textToHtmlParagraph } from './utils';
 
+console.log("EXECUTANDO O CONTENT SCRIPT .TS")
 
 type helpText = {
     id: number;
@@ -12,7 +13,7 @@ type helpText = {
 let helpTexts: helpText[] = [];
 let counterHelpText = 0;
 
-let activeElement : HTMLElement | null = null;
+let activeElement: HTMLElement | null = null;
 
 function firstGetTexts() {
 
@@ -53,8 +54,8 @@ function handleOnSearch(element: HTMLInputElement | HTMLDivElement, helptexts: h
     if (element instanceof HTMLInputElement) {
         // Pega o valor do input
         searchText = element.value.toLowerCase();
-         // Remove os primeiros dois caracteres `//`
-         if (searchText.startsWith('//')) {
+        // Remove os primeiros dois caracteres `//`
+        if (searchText.startsWith('//')) {
             searchText = searchText.slice(2);  // Atribuindo o valor de volta
         }
     }
@@ -395,9 +396,12 @@ clickOutsideToCloseShortcutWindow();
 
 // Função de toggle para a shortcut box
 export function toggleShortcutBox(isActive: boolean) {
+
+
     const shortcutBox = document.querySelector('.shortcut-box') as HTMLElement;
 
     if (shortcutBox) {
+        console.log("ENTROU no if da shortcutBox, existe shortCutBox")
         if (isActive) {
             const activeElement = document.activeElement as HTMLElement;
             const { x, y } = getCaretCoordinates(activeElement);
@@ -410,77 +414,97 @@ export function toggleShortcutBox(isActive: boolean) {
             shortcutBox.style.left = `${x}px`;     // Posiciona horizontalmente baseado no caret
         } else {
             shortcutBox.style.display = 'none';    // Esconde a shortcut box
+
         }
+    } else {
+        console.log("Nao entrou no if da shortcutBox, nao existe shortCutBox")
     }
 }
+
+//DESCOBRI QUAL O ERRO, ESTA COLOCANDO UMA POSICAO TOP MUITO GRANDE NO SHOWEDSHORTCUTBOX!!!!
+
+
 
 // Evento de keydown para capturar "//" e exibir a caixa de atalhos
 document.addEventListener('keydown', (event) => {
 
-     activeElement = document.activeElement as HTMLElement;
+    try {
+        activeElement = document.activeElement as HTMLElement;
 
 
-    if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.getAttribute('contenteditable') === 'true') {
-        let currentInputValue = '';
+        console.log("active element", activeElement);
 
-        // Verifica inputs e textareas
-        if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
-            currentInputValue = (activeElement as HTMLInputElement | HTMLTextAreaElement).value;
-        }
-        // Verifica divs contenteditable
-        else if (activeElement.getAttribute('contenteditable') === 'true') {
-            currentInputValue = activeElement.innerText || activeElement.textContent || '';
-        }
+        if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.getAttribute('contenteditable') === 'true') {
+            let currentInputValue = '';
 
-        // Verifica se o usuário pressionou "/"
 
-        if (event.key === '/') {
-            // Verifica se o valor anterior era uma "/"
-            if (currentInputValue.endsWith('/')) {
 
-                //get ActiveElement
-                console.log("ACTIVE ELEMENT when pressed //: ", activeElement)
-
-                // Obtém as coordenadas do elemento ativo
-                const rect = activeElement.getBoundingClientRect();
-
-                // Armazena a posição para a shortcut box
-                shortcutWindowPosition.x = rect.left;
-                shortcutWindowPosition.y = rect.bottom;
-
-                // Exibe a shortcut box com a nova posição
-                toggleShortcutBox(true);
-
+            // Verifica inputs e textareas
+            if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
+                console.log("activeElement.tagName", activeElement.tagName)
+                console.log("activeElement: ", activeElement)
+                currentInputValue = (activeElement as HTMLInputElement | HTMLTextAreaElement).value;
+                console.log("currentInputValue dentro de activeElement.tagName === 'INPUT: ",currentInputValue);
             }
-        }
+            // Verifica divs contenteditable
+            else if (activeElement.getAttribute('contenteditable') === 'true') {
+                currentInputValue = activeElement.innerText || activeElement.textContent || '';
+            }
 
-        if (activeElement instanceof (HTMLInputElement) || activeElement instanceof (HTMLDivElement)) {
-            if (currentInputValue.length > 2) {
-                if(shortcutWindowPosition.x !== null){
+            // Verifica se o usuário pressionou "/"
 
-                    if(activeElement instanceof (HTMLInputElement)){
-                        activeElement.addEventListener("input", (event) => {
-                            const filteredHelpTexts = handleOnSearch(activeElement as HTMLInputElement, helpTexts);
-                            updateHelpTextsShortcutWindow(filteredHelpTexts);
-                        });
-                    }
+            if (event.key === '/') {
+                // Verifica se o valor anterior era uma "/"
+                if (currentInputValue.endsWith('/')) {
 
-                    if(activeElement instanceof (HTMLDivElement)){
-                        activeElement.addEventListener('input', (event) => {
-                            const filteredHelpTexts = handleOnSearch(activeElement as HTMLInputElement, helpTexts);
-                            updateHelpTextsShortcutWindow(filteredHelpTexts);
-                        });
-                    }
+                    console.log("currentInputValue entrou aqui!: ",currentInputValue);
 
-                    //const filteredHelpTexts = handleOnSearch2(activeElement, helpTexts);
-                    //updateHelpTextsShortcutWindow(filteredHelpTexts);
+                    // Obtém as coordenadas do elemento ativo
+                    const rect = activeElement.getBoundingClientRect();
+
+                    // Armazena a posição para a shortcut box
+                    shortcutWindowPosition.x = rect.left;
+                    shortcutWindowPosition.y = rect.bottom;
+
+                    // Exibe a shortcut box com a nova posição
+                    toggleShortcutBox(true);
 
                 }
             }
-        }
 
+            if (activeElement instanceof (HTMLInputElement) || activeElement instanceof (HTMLDivElement)) {
+                if (currentInputValue.length > 2) {
+                    if (shortcutWindowPosition.x !== null) {
+
+                        if (activeElement instanceof (HTMLInputElement)) {
+                            activeElement.addEventListener("input", (event) => {
+                                const filteredHelpTexts = handleOnSearch(activeElement as HTMLInputElement, helpTexts);
+                                updateHelpTextsShortcutWindow(filteredHelpTexts);
+                            });
+                        }
+
+                        if (activeElement instanceof (HTMLDivElement)) {
+                            activeElement.addEventListener('input', (event) => {
+                                const filteredHelpTexts = handleOnSearch(activeElement as HTMLInputElement, helpTexts);
+                                updateHelpTextsShortcutWindow(filteredHelpTexts);
+                            });
+                        }
+
+                        //const filteredHelpTexts = handleOnSearch2(activeElement, helpTexts);
+                        //updateHelpTextsShortcutWindow(filteredHelpTexts);
+
+                    }
+                }
+            }
+
+        }
+    } catch (err) {
+        console.log("Error: ", err)
     }
-});
+
+
+
+}, true);
 
 
 // render helpTexts dinamically
@@ -521,15 +545,15 @@ function renderHelpTextsShortcutWindow() {
 function addTextToActiveElementWhenClicked(element: HTMLElement, textToAdd: string) {
     // Verifica se o elemento é um input ou textarea
     if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-        
+
         //inserte o texto no elemento
         element.value = textToAdd;
-        
-    } 
+
+    }
 
     // Verifica se o elemento é uma div com contenteditable
     else if (element instanceof HTMLDivElement && element.getAttribute('contenteditable') === 'true') {
-       
+
         element.innerHTML = textToAdd;
 
 
@@ -563,7 +587,7 @@ function updateHelpTextsShortcutWindow(filteredHelpTexts: helpText[]) {
         `;
 
         li.addEventListener('click', () => {
-            
+
             // Adiciona o texto ao elemento que tem o cursor ativo
             addTextToActiveElementWhenClicked(activeElement as HTMLElement, text.type_spanish);
 
