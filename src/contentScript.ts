@@ -1,4 +1,4 @@
-import { getCaretCoordinates, observeElement, textToHtmlParagraph } from './utils';
+import { getCaretCoordinates, getCaretPositionXY, getCaretPositionXY2, observeElement, textToHtmlParagraph } from './utils';
 
 console.log("EXECUTANDO O CONTENT SCRIPT .TS")
 
@@ -404,14 +404,17 @@ export function toggleShortcutBox(isActive: boolean) {
         console.log("ENTROU no if da shortcutBox, existe shortCutBox")
         if (isActive) {
             const activeElement = document.activeElement as HTMLElement;
-            const { x, y } = getCaretCoordinates(activeElement);
 
-            shortcutBox.classList.remove("hiddenShortcutBox");
-            shortcutBox.classList.add("showedShortcutBox");
-            shortcutBox.style.display = 'block';  // Exibe a shortcut box
-            shortcutBox.style.position = 'absolute';
-            shortcutBox.style.top = `${y + 60}px`;  // 60 pixels abaixo do caret
-            shortcutBox.style.left = `${x}px`;     // Posiciona horizontalmente baseado no caret
+            const caretPosition = getCaretPositionXY2(activeElement)
+            
+            if(caretPosition){
+                shortcutBox.classList.remove("hiddenShortcutBox");
+                shortcutBox.classList.add("showedShortcutBox");
+                shortcutBox.style.display = 'block';  // Exibe a shortcut box
+                shortcutBox.style.position = 'absolute';
+                shortcutBox.style.top = `${caretPosition.y + 60}px`;  // 60 pixels abaixo do caret
+                shortcutBox.style.left = `${caretPosition.x}px`;     // Posiciona horizontalmente baseado no caret
+            }
         } else {
             shortcutBox.style.display = 'none';    // Esconde a shortcut box
 

@@ -90,6 +90,127 @@ export function getCaretCoordinates(element: HTMLElement) {
   return { x, y };
 }
 
+export function getCaretPositionXY(element: HTMLElement): { x: number, y: number } | null {
+  let x = 0, y = 0;
+
+  if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+      const startPos = element.selectionStart ?? 0;
+
+      // Criamos um div invisível para simular o texto e obter a posição do caret
+      const div = document.createElement('div');
+      const style = getComputedStyle(element);
+      
+      // Copiamos os estilos do input para o div
+      div.style.position = 'absolute';
+      div.style.whiteSpace = 'pre-wrap';
+      div.style.visibility = 'hidden';
+      div.style.fontFamily = style.fontFamily;
+      div.style.fontSize = style.fontSize;
+      div.style.lineHeight = style.lineHeight;
+      div.style.padding = style.padding;
+      div.style.border = style.border;
+      div.style.width = style.width;
+      div.style.height = style.height;
+
+      // Definimos o texto até o caret e adicionamos o div ao documento
+      div.textContent = element.value.substring(0, startPos);
+      document.body.appendChild(div);
+
+      console.log("div.style: ",div.style);
+      console.log("div.style: ",div.style.left);
+      console.log("div.style: ",div.style.right);
+
+
+
+      // Obtemos as coordenadas do caret
+      const caretRect = div.getBoundingClientRect();
+      console.log("caretRect: ",caretRect);
+    //resultado> caretRect:  DOMRect {x: 0, y: 0, width: 721.265625, height: 900.59375, top: 0, …}
+
+      console.log("caretRect.left: ",caretRect.left); //0
+      console.log("div.style: ",caretRect.top); //0
+      x = caretRect.left;
+      y = caretRect.top;
+
+      // Removemos o div temporário
+      document.body.removeChild(div);
+  } else if (element.isContentEditable) {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0).cloneRange();
+          const rect = range.getClientRects()[0]; // Pega a posição do caret na tela
+
+          if (rect) {
+              x = rect.left;
+              y = rect.top;
+          }
+      }
+  }
+
+  return { x, y };
+}
+
+export function getCaretPositionXY2(element: HTMLElement): { x: number, y: number } | null {
+  let x = 0, y = 0;
+
+  if (element instanceof HTMLTextAreaElement || element instanceof HTMLInputElement) {
+      const startPos = element.selectionStart ?? 0;
+
+      // Criamos um span invisível dentro de um div para simular o texto e obter a posição do caret
+      const div = document.createElement('div');
+      const span = document.createElement('span');
+      const style = getComputedStyle(element);
+
+      // Copiamos os estilos do input/textarea para o div
+      div.style.position = 'absolute';
+      div.style.whiteSpace = 'pre-wrap';
+      div.style.wordWrap = 'break-word'; // Para que quebre em múltiplas linhas como o textarea
+      div.style.visibility = 'hidden';
+      div.style.fontFamily = style.fontFamily;
+      div.style.fontSize = style.fontSize;
+      div.style.lineHeight = style.lineHeight;
+      div.style.padding = style.padding;
+      div.style.border = style.border;
+      div.style.width = `${element.offsetWidth}px`; // O width do div deve ser igual ao do textarea/input
+      div.style.height = `${element.offsetHeight}px`; // Definimos a altura do div
+      
+      // Definimos o texto no div até o caret e um span para representar a posição do caret
+      div.textContent = element.value.substring(0, startPos);
+      span.textContent = '|'; // Usamos uma barra vertical como marcador do caret
+
+      // Adicionamos o span ao div
+      div.appendChild(span);
+
+      // Adicionamos o div ao documento
+      document.body.appendChild(div);
+
+      // Obtemos as coordenadas do caret a partir do span
+      const spanRect = span.getBoundingClientRect();
+      const elementRect = element.getBoundingClientRect();
+
+      // Corrigimos as coordenadas com base na posição do textarea e no scroll
+      x = spanRect.left - elementRect.left - element.scrollLeft;
+      y = spanRect.top - elementRect.top - element.scrollTop;
+
+      // Removemos o div temporário
+      document.body.removeChild(div);
+  } else if (element.isContentEditable) {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0).cloneRange();
+          const rect = range.getClientRects()[0]; // Pega a posição do caret na tela
+
+          if (rect) {
+              x = rect.left;
+              y = rect.top;
+          }
+      }
+  }
+
+  return { x, y };
+}
+
+
 
 
 
