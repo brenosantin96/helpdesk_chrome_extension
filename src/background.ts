@@ -27,6 +27,15 @@ chrome.runtime.onMessage.addListener((message: any, sender: any, sendResponse: (
     }
 });
 
+
+const rule = {
+    id: "my rule",  // optional, will be generated if not set.
+    priority: 100,  // optional, defaults to 100.
+    conditions: [ /* my conditions */],
+    actions: [ /* my actions */]
+};
+
+
 var context_id = -1;
 
 

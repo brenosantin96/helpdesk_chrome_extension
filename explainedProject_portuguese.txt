@@ -1,0 +1,327 @@
+Estou realizando uma extensao para o Google Chrome.
+Estou desenvolvendo usando TYPESCRIPT.
+A extensao tem como intuito ajudar tecnicos de helpdesk com textos prontos para incidencias frequentes que lidamos no dia a dia.
+A extensao esta em desenvolvimento ainda e vai ser apenas para meu uso pessoal e alguns colegas da profissao.
+
+Dentro do navegador, em qualquer campo do tipo input, textArea o div editavel, ao ser pressionado "//" sem aspas, é apresentado uma div que estava com o style hidden e dentro dessa div vai ter varias opcoes de texto, a medida que for escrevendo nesse campo div, input, textArea, vai sendo apresentado resultados que condizem com o atalho predeterminado antes, e, com o propio mouse o tecnico vai poder selecionar o texto previamente filtrado e em poucos segundos vai ter um texto pronto no campo de input!
+
+O usuario final, tecnico, nao vai poder atualizar atalhos nem os textos, para isso estou consumindo uma API que ja me traz todos os textos prontos!
+
+type helpText = {
+    id: number;
+    shortcut: string;
+    type_spanish: string
+    type_english: string
+}
+
+Estou ja com quase tudo pronto, essa é a estrutura atual dos arquivos (a pasta node_modules foi oculta),
+Observe que por estar na estrutura typescript, precisei adicionar alguns arquivos essenciais para o build, como o webpack.config.js e o tsconfig.json
+
+C:.
+│   .gitignore
+│   package-lock.json
+│   package.json
+│   tsconfig.json
+│
+├───dist
+│   │   background.js
+│   │   contentScript.js
+│   │   manifest.json
+│   │   shortcutComponent.html
+│   │   side_extension.html
+│   │   styles.css
+│   │
+│   └───images
+│           down-arrow-key.png
+│           home.png
+│           left-arrow-key.png
+│           right-arrow-key.png
+│           search_icon.svg
+│           search_icon_png.png
+│           up-arrow-key.png
+│
+├───images
+│       down-arrow-key.png
+│       home.png
+│       left-arrow-key.png
+│       right-arrow-key.png
+│       search_icon.svg
+│       search_icon_png.png
+│       up-arrow-key.png
+│
+├───public
+│       manifest.json
+│
+├───src
+│       background.ts
+│       contentScript.ts
+│       shortcutComponent.html
+│       side_extension.html
+│       utils.ts
+│
+├───styles
+│       styles.css
+│
+└───webpack
+        webpack.config.js
+
+
+Meu manifest.json
+
+{
+  "name": "HelpDesk MAR",
+  "description": "This extension is made to improve work of helpdesks technicians",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://pokeapi.co/"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "pressButton" : {
+      "suggested_key" : "Ctrl+Shift+Y",
+      "description" : "This extension is made to improve work of helpdesks technicians"
+    }
+  },
+  "action": {},
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "contentScript.js"
+      ],
+      "css": [
+        "styles.css"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "styles.css",
+        "side_extension.html",
+        "shortcutComponent.html",
+        "images/search_icon_png.png",
+        "images/search_icon.svg",
+        "images/down-arrow-key.png",
+        "images/home.png",
+        "images/up-arrow-key.png",
+        "images/left-arrow-key.png",
+        "images/right-arrow-key.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}
+
+Meu webpack.config.js
+
+const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+module.exports = {
+  mode: "production",
+  entry: {
+    background: path.resolve(__dirname, "..", "src", "background.ts"),
+    contentScript: path.resolve(__dirname, "..", "src", "contentScript.ts"),  // Adiciona o contentScript.ts
+  },
+  output: {
+    path: path.join(__dirname, "../dist"),
+    filename: "[name].js",  // Gera um arquivo para cada entrada (background.js, contentScript.js)
+  },
+  resolve: {
+    extensions: [".ts", ".js"],
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        loader: "ts-loader",
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.css$/,  // Regra para processar arquivos .css
+        use: [MiniCssExtractPlugin.loader, "css-loader"],  // Extrai o CSS para um arquivo separado
+      },
+      {
+        test: /\.(png|svg)$/i,  // Regra para processar arquivos de imagem (PNG e SVG)
+        type: 'asset/resource',  // Usa a feature de assets nativos do Webpack
+        generator: {
+          filename: 'images/[name][ext]',  // Gera as imagens na pasta dist/images
+        },
+      },
+    ],
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'styles.css',  // Nome do arquivo CSS gerado
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: ".", to: ".", context: "public" },  // Copia o conteúdo da pasta public para dist
+        { from: "src/side_extension.html", to: "side_extension.html" },  // Copia o HTML para dist
+        { from: "src/shortcutComponent.html", to: "shortcutComponent.html" },  // Copia o HTML para dist
+        { from: "images", to: "images" },  // Copia a pasta de imagens para dist/images
+      ],
+    }),
+  ],
+};
+
+
+Meu side_extension.html  (esse é o html que aparece quando clico sobre o icone para ativar a extensao, inicialmente ele fica escondido no cantinho e ao clicar sobre o botao lateral "desk-container-toggle-button", é como se fosse um Menu Suspenso que é exibido ao fazer clique sobre ele
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desk-Container</title>
+</head>
+
+<body>
+    <!-- Container principal da extensão -->
+    <div id="desk-container">
+        <!-- Botão de toggle, vai ficar à esquerda do desk-container-body -->
+        <button id="desk-container-toggle-button">B</button>
+
+        <!-- Corpo da janela que será exibido ao clicar no botão -->
+        <div class="desk-container-body">
+            <div class="header-body-container">
+                <div class="top-area-header">
+                    <div id="button1toparea">
+                        <button class="button-header-container"><img /></button>
+                    </div>
+                    <div id="button2toparea">
+                        <div class="linkUser">
+                            <a href="#">Breno</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-area-header">
+                    <div class="text-bottom-area-header">
+                        Templates
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="content-body-container">
+                <div class="searchbox-body-container">
+                    <div class="svgLupa">
+                        <img />
+                    </div>
+                    <input class="searchbox-body-container-text" placeholder="Search..." />
+                </div>
+                <div class="templateToggler">
+                    <div class="templateCounter">
+                        Templates (XX)
+                    </div>
+                    <button class="arrowKeyTemplate">
+                        <img />
+                    </button>
+                </div>
+                <div id="templatesDiv" class="templates_expanded" style="right: 0px;">
+                    <ul class="templates_list">
+
+
+                    </ul>
+                </div>
+            </div>
+
+            <div id="content-body-container-template" class="closed">
+                <div class="trigger-input">
+                    <div>Template Trigger</div>
+                    <input type="text" value="" readonly />
+                </div>
+                <div class="full-text-trigger">
+
+                </div>
+            </div>
+
+            <div class="footer-body-container">
+                <button>Analyzer!</button>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
+
+Observe o html do shortcutComponent, que é a div que vai aparecer quando o usuario realiar o // no teclado.
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div class="shortcut-box hiddenShortcutBox">
+        <ul class="templates-list-shortcut-box">
+            <li class="shortcut_item">
+                <div class="shortcut-title">--Test </div>
+                <div class="shortcut-description">Test Description "This is being populated dynamically, this will be overwritten</div>
+            </li>
+            <li class="shortcut_item">
+                <div class="shortcut-title">--Test </div>
+                <div class="shortcut-description">Test Description "This is being populated dynamically, this will be overwritten</div>
+            </li>
+        </ul>
+    </div>
+
+</body>
+
+</html>
+
+Observe meu background.ts
+
+//SERVICE WORKER PAGE
+import "../styles/styles.css"
+
+chrome.action.onClicked.addListener((tab: chrome.tabs.Tab) => {
+    if (tab.id && tab.url?.startsWith("http")) {
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['contentScript.js']
+        });
+    }
+});
+
+chrome.runtime.onMessage.addListener((message: any, sender: any, sendResponse: (response?: any) => void) => {
+    if (message.type === 'getHelpTexts') {
+        fetch('http://localhost:9000/api/inc_vs_ritm_texts')
+            .then(response => {
+                console.log("Response: ", response)
+                return response.json()
+            })
+            .then(data => {
+
+                console.log("Data: ", data)
+                sendResponse({ helpTexts: data })
+            })
+            .catch(error => sendResponse({ error }));
+        return true;  // Indica que a resposta será enviada de forma assíncrona
+    }
+});
+
+var context_id = -1;
+
+

@@ -1,0 +1,330 @@
+I'm making an extension for Google Chrome.
+I'm developing it using TYPESCRIPT.
+The extension is intended to help helpdesk technicians with ready-made texts for frequent incidents that we deal with on a daily basis.
+The extension is still under development and will only be for my personal use and that of a few colleagues in the profession.
+
+Within the browser, in any field of the type input, textArea or editable div, when you press “//” without quotes, a div is displayed that had the style hidden and within this div there will be several text options, as you type in this div, input, textArea field, results will be displayed that match the shortcut predetermined before, and, with the mouse itself, the technician will be able to select the previously filtered text and in a few seconds there will be a ready text in the input field!
+
+The end user, the technician, won't be able to update the shortcuts or the texts, so I'm using an API that already brings me all the ready-made texts!
+
+type helpText = {
+    id: number;
+    shortcut: string;
+    type_spanish: string
+    type_english: string
+}
+
+I have almost everything ready, this is the current file structure (the node_modules folder has been hidden),
+Note that because it's in the typescript structure, I had to add some essential files for the build, such as webpack.config.js and tsconfig.json.
+
+C:.
+│   .gitignore
+│   package-lock.json
+│   package.json
+│   tsconfig.json
+│
+├───dist
+│   │   background.js
+│   │   contentScript.js
+│   │   manifest.json
+│   │   shortcutComponent.html
+│   │   side_extension.html
+│   │   styles.css
+│   │
+│   └───images
+│           down-arrow-key.png
+│           home.png
+│           left-arrow-key.png
+│           right-arrow-key.png
+│           search_icon.svg
+│           search_icon_png.png
+│           up-arrow-key.png
+│
+├───images
+│       down-arrow-key.png
+│       home.png
+│       left-arrow-key.png
+│       right-arrow-key.png
+│       search_icon.svg
+│       search_icon_png.png
+│       up-arrow-key.png
+│
+├───public
+│       manifest.json
+│
+├───src
+│       background.ts
+│       contentScript.ts
+│       shortcutComponent.html
+│       side_extension.html
+│       utils.ts
+│
+├───styles
+│       styles.css
+│
+└───webpack
+        webpack.config.js
+
+my manifest.json
+
+{
+  "name": "HelpDesk MAR",
+  "description": "This extension is made to improve work of helpdesks technicians",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://pokeapi.co/"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "pressButton" : {
+      "suggested_key" : "Ctrl+Shift+Y",
+      "description" : "This extension is made to improve work of helpdesks technicians"
+    }
+  },
+  "action": {},
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "contentScript.js"
+      ],
+      "css": [
+        "styles.css"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "styles.css",
+        "side_extension.html",
+        "shortcutComponent.html",
+        "images/search_icon_png.png",
+        "images/search_icon.svg",
+        "images/down-arrow-key.png",
+        "images/home.png",
+        "images/up-arrow-key.png",
+        "images/left-arrow-key.png",
+        "images/right-arrow-key.png"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}
+
+my webpack.config.js:
+
+const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+module.exports = {
+  mode: "production",
+  entry: {
+    background: path.resolve(__dirname, "..", "src", "background.ts"),
+    contentScript: path.resolve(__dirname, "..", "src", "contentScript.ts"),  // Adiciona o contentScript.ts
+  },
+  output: {
+    path: path.join(__dirname, "../dist"),
+    filename: "[name].js",  // Gera um arquivo para cada entrada (background.js, contentScript.js)
+  },
+  resolve: {
+    extensions: [".ts", ".js"],
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        loader: "ts-loader",
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.css$/,  // Regra para processar arquivos .css
+        use: [MiniCssExtractPlugin.loader, "css-loader"],  // Extrai o CSS para um arquivo separado
+      },
+      {
+        test: /\.(png|svg)$/i,  // Regra para processar arquivos de imagem (PNG e SVG)
+        type: 'asset/resource',  // Usa a feature de assets nativos do Webpack
+        generator: {
+          filename: 'images/[name][ext]',  // Gera as imagens na pasta dist/images
+        },
+      },
+    ],
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'styles.css',  // Nome do arquivo CSS gerado
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: ".", to: ".", context: "public" },  // Copia o conteúdo da pasta public para dist
+        { from: "src/side_extension.html", to: "side_extension.html" },  // Copia o HTML para dist
+        { from: "src/shortcutComponent.html", to: "shortcutComponent.html" },  // Copia o HTML para dist
+        { from: "images", to: "images" },  // Copia a pasta de imagens para dist/images
+      ],
+    }),
+  ],
+};
+
+
+My side_extension.html (this is the html that appears when I click on the icon to activate the extension, initially it's hidden in the corner and when I click on the side button “desk-container-toggle-button”, it's like a Dropdown Menu that appears when I click on it).
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desk-Container</title>
+</head>
+
+<body>
+    <!-- Container principal da extensão -->
+    <div id="desk-container">
+        <!-- Botão de toggle, vai ficar à esquerda do desk-container-body -->
+        <button id="desk-container-toggle-button">B</button>
+
+        <!-- Corpo da janela que será exibido ao clicar no botão -->
+        <div class="desk-container-body">
+            <div class="header-body-container">
+                <div class="top-area-header">
+                    <div id="button1toparea">
+                        <button class="button-header-container"><img /></button>
+                    </div>
+                    <div id="button2toparea">
+                        <div class="linkUser">
+                            <a href="#">Breno</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-area-header">
+                    <div class="text-bottom-area-header">
+                        Templates
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="content-body-container">
+                <div class="searchbox-body-container">
+                    <div class="svgLupa">
+                        <img />
+                    </div>
+                    <input class="searchbox-body-container-text" placeholder="Search..." />
+                </div>
+                <div class="templateToggler">
+                    <div class="templateCounter">
+                        Templates (XX)
+                    </div>
+                    <button class="arrowKeyTemplate">
+                        <img />
+                    </button>
+                </div>
+                <div id="templatesDiv" class="templates_expanded" style="right: 0px;">
+                    <ul class="templates_list">
+
+
+                    </ul>
+                </div>
+            </div>
+
+            <div id="content-body-container-template" class="closed">
+                <div class="trigger-input">
+                    <div>Template Trigger</div>
+                    <input type="text" value="" readonly />
+                </div>
+                <div class="full-text-trigger">
+
+                </div>
+            </div>
+
+            <div class="footer-body-container">
+                <button>Analyzer!</button>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
+
+
+Look at the html of the shortcutComponent, which is the div that will appear when the user presses // on the keyboard:
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div class="shortcut-box hiddenShortcutBox">
+        <ul class="templates-list-shortcut-box">
+            <li class="shortcut_item">
+                <div class="shortcut-title">--Test </div>
+                <div class="shortcut-description">Test Description "This is being populated dynamically, this will be overwritten</div>
+            </li>
+            <li class="shortcut_item">
+                <div class="shortcut-title">--Test </div>
+                <div class="shortcut-description">Test Description "This is being populated dynamically, this will be overwritten</div>
+            </li>
+        </ul>
+    </div>
+
+</body>
+
+</html>
+
+Look at my background.ts file:
+
+//SERVICE WORKER PAGE
+import "../styles/styles.css"
+
+chrome.action.onClicked.addListener((tab: chrome.tabs.Tab) => {
+    if (tab.id && tab.url?.startsWith("http")) {
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['contentScript.js']
+        });
+    }
+});
+
+chrome.runtime.onMessage.addListener((message: any, sender: any, sendResponse: (response?: any) => void) => {
+    if (message.type === 'getHelpTexts') {
+        fetch('http://localhost:9000/api/inc_vs_ritm_texts')
+            .then(response => {
+                console.log("Response: ", response)
+                return response.json()
+            })
+            .then(data => {
+
+                console.log("Data: ", data)
+                sendResponse({ helpTexts: data })
+            })
+            .catch(error => sendResponse({ error }));
+        return true;  // Indicates that the response will be sent asynchronously
+    }
+});
+
+var context_id = -1;
+
+All this explanation was just to introduce what we're going to talk about that evening.
+
+You understand the project, right?

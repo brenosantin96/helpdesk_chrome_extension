@@ -17,7 +17,7 @@ let activeElement: HTMLElement | null = null;
 
 function firstGetTexts() {
 
-    //Adicionar algo para checar se o texto ja nao esta no storage do navegador
+    //I will change this function to only execute if there is no texts already in cache. dont worry about it now!
 
     if (helpTexts.length === 0) {
         //sending message to background.ts to get all text Types
@@ -401,13 +401,12 @@ export function toggleShortcutBox(isActive: boolean) {
     const shortcutBox = document.querySelector('.shortcut-box') as HTMLElement;
 
     if (shortcutBox) {
-        console.log("ENTROU no if da shortcutBox, existe shortCutBox")
         if (isActive) {
             const activeElement = document.activeElement as HTMLElement;
 
             const caretPosition = getCaretPositionXY2(activeElement)
-            
-            if(caretPosition){
+
+            if (caretPosition) {
                 shortcutBox.classList.remove("hiddenShortcutBox");
                 shortcutBox.classList.add("showedShortcutBox");
                 shortcutBox.style.display = 'block';  // Exibe a shortcut box
@@ -420,7 +419,7 @@ export function toggleShortcutBox(isActive: boolean) {
 
         }
     } else {
-        console.log("Nao entrou no if da shortcutBox, nao existe shortCutBox")
+        console.log("not in if of shortcutBox")
     }
 }
 
@@ -428,7 +427,7 @@ export function toggleShortcutBox(isActive: boolean) {
 
 
 
-// Evento de keydown para capturar "//" e exibir a caixa de atalhos
+// event to capture "//" and show shortcutbox
 document.addEventListener('keydown', (event) => {
 
     try {
@@ -447,7 +446,7 @@ document.addEventListener('keydown', (event) => {
                 console.log("activeElement.tagName", activeElement.tagName)
                 console.log("activeElement: ", activeElement)
                 currentInputValue = (activeElement as HTMLInputElement | HTMLTextAreaElement).value;
-                console.log("currentInputValue dentro de activeElement.tagName === 'INPUT: ",currentInputValue);
+                console.log("currentInputValue dentro de activeElement.tagName === 'INPUT: ", currentInputValue);
             }
             // Verifica divs contenteditable
             else if (activeElement.getAttribute('contenteditable') === 'true') {
@@ -460,7 +459,7 @@ document.addEventListener('keydown', (event) => {
                 // Verifica se o valor anterior era uma "/"
                 if (currentInputValue.endsWith('/')) {
 
-                    console.log("currentInputValue entrou aqui!: ",currentInputValue);
+                    console.log("currentInputValue entrou aqui!: ", currentInputValue);
 
                     // Obtém as coordenadas do elemento ativo
                     const rect = activeElement.getBoundingClientRect();
@@ -507,7 +506,9 @@ document.addEventListener('keydown', (event) => {
 
 
 
-}, true);
+}, { capture: true });
+
+
 
 
 // render helpTexts dinamically
@@ -602,6 +603,7 @@ function updateHelpTextsShortcutWindow(filteredHelpTexts: helpText[]) {
         templatesShortcutList.appendChild(li);
     });
 }
+
 
 
 
