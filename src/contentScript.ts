@@ -398,7 +398,9 @@ clickOutsideToCloseShortcutWindow();
 export function toggleShortcutBox(isActive: boolean) {
 
 
+    console.log("Entrou no toggleShortcutBox")
     const shortcutBox = document.querySelector('.shortcut-box') as HTMLElement;
+    console.log("shortcutBox: ", shortcutBox)
 
     if (shortcutBox) {
         if (isActive) {
@@ -428,7 +430,8 @@ export function toggleShortcutBox(isActive: boolean) {
 
 
 // event to capture "//" and show shortcutbox
-document.addEventListener('keydown', (event) => {
+
+ document.addEventListener('keydown', (event) => {
 
     try {
         activeElement = document.activeElement as HTMLElement;
@@ -506,8 +509,7 @@ document.addEventListener('keydown', (event) => {
 
 
 
-}, { capture: true });
-
+}, { capture: true }); 
 
 
 
@@ -559,7 +561,6 @@ function addTextToActiveElementWhenClicked(element: HTMLElement, textToAdd: stri
     else if (element instanceof HTMLDivElement && element.getAttribute('contenteditable') === 'true') {
 
         element.innerHTML = textToAdd;
-
 
     } else {
         console.log("Element not edittable");
