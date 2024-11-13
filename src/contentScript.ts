@@ -1,4 +1,4 @@
-import { getCaretCoordinates, getCaretPositionXY, getCaretPositionXY2, observeElement, textToHtmlParagraph } from './utils';
+import { getCaretPositionXY2, observeElement, textToHtmlParagraph } from './utils';
 
 console.log("EXECUTANDO O CONTENT SCRIPT .TS")
 
@@ -35,32 +35,33 @@ function firstGetTexts() {
 
 firstGetTexts();
 
-
+//function to search on given elements
 function handleOnSearch(element: HTMLInputElement | HTMLDivElement, helptexts: helpText[]): helpText[] {
 
     let searchText: string = '';
 
-    // Verifica se o elemento é uma DIV editável
+    // verifies if is an edditable div
     if (element instanceof HTMLDivElement && element.getAttribute('contenteditable') === 'true') {
-        // Pega o texto da DIV
+        // getting divText
         searchText = element.innerText.toLowerCase();
-        // Remove os primeiros dois caracteres `//`
+        
+        // removing first two digits `//`
         if (searchText.startsWith('//')) {
             searchText = searchText.slice(2);  // Atribuindo o valor de volta
         }
     }
 
-    // Verifica se o elemento é um input (tipo <input> ou <textarea>)
+    // verifies if it is input or textarea
     if (element instanceof HTMLInputElement) {
-        // Pega o valor do input
+        
         searchText = element.value.toLowerCase();
-        // Remove os primeiros dois caracteres `//`
+        
         if (searchText.startsWith('//')) {
-            searchText = searchText.slice(2);  // Atribuindo o valor de volta
+            searchText = searchText.slice(2);  // getting value after two first digits
         }
     }
 
-    // Filtra os textos de ajuda com base no atalho inserido
+    // Filtering  texts accordly to texts above.
     const filteredHelpTexts = helptexts.filter(helpText =>
         helpText.shortcut.toLowerCase().includes(searchText)
     );
@@ -105,13 +106,13 @@ function renderHelpTexts() {
 
     const templatesList = document.querySelector('.templates_list');
 
-    if (!templatesList) return; // Certificar-se que o UL existe
+    if (!templatesList) return; // assuring ul exists.
     templatesList.innerHTML = '';
 
     helpTexts.forEach(text => {
 
         const li = document.createElement('li');
-        li.classList.add('template_item'); // Adicionar a classe
+        li.classList.add('template_item'); // adding class
 
         li.id = `${text.id}`;
 
@@ -222,7 +223,7 @@ function toggleExtension() {
                 if (shortcutBox) {
                     document.body.append(shortcutBox)
 
-                    // Chama observeElement apenas depois que o .shortcut-box foi adicionado ao DOM
+                    // calling observeElement only after .shortcut-box class being add in DOM
                     observeElement('.shortcut-box', (element) => {
                         renderHelpTextsShortcutWindow();
                     });
@@ -272,7 +273,7 @@ function toggleExtension() {
                         desk_container.remove();
                     });
 
-                    // Alteração na função de busca para disparar com o evento 'input'
+                    // Change the search function to fire with the 'input' event
                     const searchbox = desk_container.querySelector(".searchbox-body-container-text") as HTMLInputElement;
                     if (searchbox) {
                         searchbox.addEventListener("input", (event) => {
@@ -290,17 +291,17 @@ function toggleExtension() {
                         arrowKeyTemplateButton.addEventListener("click", () => {
                             if (templates_expanded) {
 
-                                templates_expanded.classList.toggle("templates_closed"); // Alterna a classe 'templates_closed' e "templates_expanded"
+                                templates_expanded.classList.toggle("templates_closed"); // toggle classes 'templates_closed' and "templates_expanded"
 
 
 
                                 const iconToggler = document.querySelector(".templates_closed")
                                 if (iconToggler) {
                                     imageElementArrowKey.src = chrome.runtime.getURL("images/right-arrow-key.png");
-                                    templates_expanded.style.right = "-900px";  // Modifica o estilo inline
+                                    templates_expanded.style.right = "-900px";  // change styles inline
                                 } else {
                                     imageElementArrowKey.src = chrome.runtime.getURL("images/left-arrow-key.png");
-                                    templates_expanded.style.right = "0px";  // Modifica o estilo inline
+                                    templates_expanded.style.right = "0px";  // change styles inline
 
                                 }
                             }
@@ -316,7 +317,7 @@ function toggleExtension() {
                     }
 
                     //Adding images
-                    // Corrige o caminho da imagem dinamicamente
+                    // Corrects the image path dynamically
                     const imageElement = document.querySelector(".svgLupa img") as HTMLImageElement;
                     if (imageElement) {
                         imageElement.src = chrome.runtime.getURL("images/search_icon_png.png");
@@ -347,7 +348,7 @@ function toggleExtension() {
 toggleExtension();
 
 
-// Tipo para armazenar a posição da janela de atalho
+// Type to store the position of the shortcut window
 type ShortcutWindowPositionType = {
     x: number | null;
     y: number | null;
@@ -358,31 +359,31 @@ const shortcutWindowPosition: ShortcutWindowPositionType = {
     y: null
 }
 
-// Função para fechar a janela de atalhos
+// Function to close the shortcut window
 const handleCloseShortcutWindow = () => {
     shortcutWindowPosition.x = null;
     shortcutWindowPosition.y = null;
-    toggleShortcutBox(false);  // Fecha a shortcut-box
+    toggleShortcutBox(false);  // closes shortcut-box
 
 }
 
-// Função para detectar clique fora da shortcut-box
+// Function to detect clicks outside the shortcut-box
 const clickOutsideToCloseShortcutWindow = () => {
 
 
-    // Adiciona um event listener para cliques na página
+    // adding a event listener for page clicks
     document.addEventListener('click', (event: MouseEvent) => {
 
         const shortcutBox = document.querySelector('.shortcut-box') as HTMLElement;
 
         const rect = shortcutBox?.getBoundingClientRect();
 
-        // Verifica se o clique foi fora da área da shortcut-box
+        // verifies if click was outside shortcut-box area
         if (rect &&
             (event.clientX < rect.left || event.clientX > rect.right ||
                 event.clientY < rect.top || event.clientY > rect.bottom)) {
 
-            // O clique foi fora da shortcut-box, então fecha a janela
+            // click out, closing window
             shortcutBox.classList.add("hiddenShortcutBox");
             shortcutBox.classList.remove("showedShortcutBox");
             handleCloseShortcutWindow();
@@ -392,15 +393,11 @@ const clickOutsideToCloseShortcutWindow = () => {
 
 clickOutsideToCloseShortcutWindow();
 
-//funcao vai receber se o elemento ta ativo, 
 
-// Função de toggle para a shortcut box
+// toggleFunction for shortcutBox
 export function toggleShortcutBox(isActive: boolean) {
 
-
-    console.log("Entrou no toggleShortcutBox")
     const shortcutBox = document.querySelector('.shortcut-box') as HTMLElement;
-    console.log("shortcutBox: ", shortcutBox)
 
     if (shortcutBox) {
         if (isActive) {
@@ -411,22 +408,19 @@ export function toggleShortcutBox(isActive: boolean) {
             if (caretPosition) {
                 shortcutBox.classList.remove("hiddenShortcutBox");
                 shortcutBox.classList.add("showedShortcutBox");
-                shortcutBox.style.display = 'block';  // Exibe a shortcut box
+                shortcutBox.style.display = 'block';  // show shortcut-box
                 shortcutBox.style.position = 'absolute';
-                shortcutBox.style.top = `${caretPosition.y + 60}px`;  // 60 pixels abaixo do caret
-                shortcutBox.style.left = `${caretPosition.x}px`;     // Posiciona horizontalmente baseado no caret
+                shortcutBox.style.top = `${caretPosition.y + 60}px`;  // 60 pixels under caret Position
+                shortcutBox.style.left = `${caretPosition.x}px`;    
             }
         } else {
-            shortcutBox.style.display = 'none';    // Esconde a shortcut box
+            shortcutBox.style.display = 'none';    // hides shortcut-box
 
         }
     } else {
         console.log("not in if of shortcutBox")
     }
 }
-
-//DESCOBRI QUAL O ERRO, ESTA COLOCANDO UMA POSICAO TOP MUITO GRANDE NO SHOWEDSHORTCUTBOX!!!!
-
 
 
 // event to capture "//" and show shortcutbox
@@ -435,52 +429,45 @@ export function toggleShortcutBox(isActive: boolean) {
 
     try {
         activeElement = document.activeElement as HTMLElement;
-
-
         console.log("active element", activeElement);
 
         if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.getAttribute('contenteditable') === 'true') {
+            
+
             let currentInputValue = '';
 
-
-
-            // Verifica inputs e textareas
+            // verifying inputs and textareas
             if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
-                console.log("activeElement.tagName", activeElement.tagName)
-                console.log("activeElement: ", activeElement)
+                //getting actual value of active element
                 currentInputValue = (activeElement as HTMLInputElement | HTMLTextAreaElement).value;
-                console.log("currentInputValue dentro de activeElement.tagName === 'INPUT: ", currentInputValue);
             }
-            // Verifica divs contenteditable
+            // verifying divs
             else if (activeElement.getAttribute('contenteditable') === 'true') {
-                currentInputValue = activeElement.innerText || activeElement.textContent || '';
+                currentInputValue = activeElement.innerText || activeElement.textContent || ''; //getting actual value of active div
             }
 
-            // Verifica se o usuário pressionou "/"
-
+            // verifying if user pressed "/"
             if (event.key === '/') {
-                // Verifica se o valor anterior era uma "/"
+                // verifies if previous value is a "/"
                 if (currentInputValue.endsWith('/')) {
 
-                    console.log("currentInputValue entrou aqui!: ", currentInputValue);
-
-                    // Obtém as coordenadas do elemento ativo
+                    // getting coords of active element
                     const rect = activeElement.getBoundingClientRect();
 
-                    // Armazena a posição para a shortcut box
+                    // storing position for shortcutbox
                     shortcutWindowPosition.x = rect.left;
                     shortcutWindowPosition.y = rect.bottom;
 
-                    // Exibe a shortcut box com a nova posição
+                    // showing shortcutbox with new position
                     toggleShortcutBox(true);
 
                 }
             }
 
+            //adding EventListenners to activeElements, this listenner will add function to filter the given element
             if (activeElement instanceof (HTMLInputElement) || activeElement instanceof (HTMLDivElement)) {
                 if (currentInputValue.length > 2) {
                     if (shortcutWindowPosition.x !== null) {
-
                         if (activeElement instanceof (HTMLInputElement)) {
                             activeElement.addEventListener("input", (event) => {
                                 const filteredHelpTexts = handleOnSearch(activeElement as HTMLInputElement, helpTexts);
@@ -494,10 +481,6 @@ export function toggleShortcutBox(isActive: boolean) {
                                 updateHelpTextsShortcutWindow(filteredHelpTexts);
                             });
                         }
-
-                        //const filteredHelpTexts = handleOnSearch2(activeElement, helpTexts);
-                        //updateHelpTextsShortcutWindow(filteredHelpTexts);
-
                     }
                 }
             }
@@ -507,24 +490,22 @@ export function toggleShortcutBox(isActive: boolean) {
         console.log("Error: ", err)
     }
 
-
-
 }, { capture: true }); 
 
 
 
-// render helpTexts dinamically
+// render helpTexts dinamically in Shortcut Window
 function renderHelpTextsShortcutWindow() {
 
     const templatesShortcutList = document.querySelector('.templates-list-shortcut-box');
 
-    if (!templatesShortcutList) return; // Certificar-se que o UL existe
+    if (!templatesShortcutList) return; // verifying if ul exists
     templatesShortcutList.innerHTML = '';
 
     helpTexts.forEach(text => {
 
         const li = document.createElement('li');
-        li.classList.add('shortcut_item'); // Adicionar a classe
+        li.classList.add('shortcut_item'); // adding classe
 
         li.id = `${text.id}`;
 
@@ -536,7 +517,7 @@ function renderHelpTextsShortcutWindow() {
         //adding event click on each LI that will open a new window!
         li.addEventListener('click', () => {
 
-            // Adiciona o texto ao elemento que tem o cursor ativo
+            // Adds the text to the element with the active cursor
             addTextToActiveElementWhenClicked(activeElement as HTMLElement, text.type_spanish);
 
             //closeShortcutBox
@@ -549,19 +530,15 @@ function renderHelpTextsShortcutWindow() {
 }
 
 function addTextToActiveElementWhenClicked(element: HTMLElement, textToAdd: string) {
-    // Verifica se o elemento é um input ou textarea
+    // verifies if element is an input or textArea
     if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-
-        //inserte o texto no elemento
+        //inserting text in element
         element.value = textToAdd;
-
     }
 
-    // Verifica se o elemento é uma div com contenteditable
+    // verifies if element is a div with contentEditable
     else if (element instanceof HTMLDivElement && element.getAttribute('contenteditable') === 'true') {
-
         element.innerHTML = textToAdd;
-
     } else {
         console.log("Element not edittable");
     }
@@ -593,7 +570,7 @@ function updateHelpTextsShortcutWindow(filteredHelpTexts: helpText[]) {
 
         li.addEventListener('click', () => {
 
-            // Adiciona o texto ao elemento que tem o cursor ativo
+            //adding event click on each LI that will open a new window!
             addTextToActiveElementWhenClicked(activeElement as HTMLElement, text.type_spanish);
 
             //closeShortcutBox
