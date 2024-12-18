@@ -28,3 +28,9 @@ chrome.runtime.onMessage.addListener((message: any, sender: any, sendResponse: (
     }
 });
 
+chrome.runtime.onMessage.addListener(function(message : any, sender : any) {
+    if (message.sendBack) {
+        chrome.tabs.sendMessage(sender.tab.id, message.data);
+    }
+});
+

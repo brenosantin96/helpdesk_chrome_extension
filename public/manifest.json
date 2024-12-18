@@ -30,13 +30,16 @@
       ],
       "css": [
         "styles.css"
-      ]
+      ],
+      "run_at": "document_start"
     }
   ],
   "web_accessible_resources": [
     {
       "resources": [
         "styles.css",
+        "contentScript.css",
+        "iframe.css",
         "side_extension.html",
         "shortcutComponent.html",
         "images/search_icon_png.png",

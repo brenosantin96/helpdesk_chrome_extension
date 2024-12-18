@@ -14,6 +14,7 @@
   "include": [
     "src/background.ts",                 // Inclui arquivo de script TypeScript
     "src/contentScript.ts",
+    "src/contentScript2.ts",
     "node_modules/chrome-types",  // Certifica os tipos de Chrome sejam incluídos
 
   ]

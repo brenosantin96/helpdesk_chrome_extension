@@ -6,11 +6,14 @@ module.exports = {
   mode: "production",
   entry: {
     background: path.resolve(__dirname, "..", "src", "background.ts"),
-    contentScript: path.resolve(__dirname, "..", "src", "contentScript.ts"),  // adding contentScript.ts
+    contentScript: path.resolve(__dirname, "..", "src", "contentScript.ts"),
+    side_extension: path.resolve(__dirname, "..", "src", "side_extension.ts"),
+    contentScriptStyles: path.resolve(__dirname, "..", "styles/contentScript.css"),
+    iframeStyles: path.resolve(__dirname, "..", "styles/iframe.css"),
   },
   output: {
     path: path.join(__dirname, "../dist"),
-    filename: "[name].js",  // Generates a file for each input (background.js, contentScript.js
+    filename: "[name].js",
   },
   resolve: {
     extensions: [".ts", ".js"],
@@ -23,28 +26,33 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.css$/,  // rule to process .css files
-        use: [MiniCssExtractPlugin.loader, "css-loader"],  // Extracts the CSS to a separate file
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
       {
-        test: /\.(png|svg)$/i,  // Rule for processing image files (PNG and SVG)
-        type: 'asset/resource',  // Uses Webpack's native assets feature
+        test: /\.(png|svg)$/i,
+        type: "asset/resource",
         generator: {
-          filename: 'images/[name][ext]',  // generate images in dist/images folder
+          filename: "images/[name][ext]",
         },
       },
     ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'styles.css',  // Name of the generated CSS file
+      // Generates separate CSS files for each entry point
+      filename: ({ chunk }) => {
+        if (chunk.name === "contentScriptStyles") return "contentScript.css";
+        if (chunk.name === "iframeStyles") return "iframe.css";
+        return "[name].css";
+      },
     }),
     new CopyPlugin({
       patterns: [
-        { from: ".", to: ".", context: "public" },  // Copy the contents of the public folder to dist
-        { from: "src/side_extension.html", to: "side_extension.html" },  // Copy the HTML to dist
-        { from: "src/shortcutComponent.html", to: "shortcutComponent.html" },  // Copy the HTML to dist
-        { from: "images", to: "images" },  // Copy the images folder to dist/images
+        { from: ".", to: ".", context: "public" },
+        { from: "src/side_extension.html", to: "side_extension.html" },
+        { from: "src/shortcutComponent.html", to: "shortcutComponent.html" },
+        { from: "images", to: "images" },
       ],
     }),
   ],

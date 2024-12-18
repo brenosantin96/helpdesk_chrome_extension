@@ -1,0 +1,377 @@
+:root {
+    /* See https://stackoverflow.com/a/491052 about why we set 2147483647 as the max number of z-index. */
+    --helpdesk-max-zindex: 2147483647;
+  
+    }
+
+* {
+    box-sizing: border-box;
+}
+
+#desk-container {
+    position: fixed;
+    z-index: var(--helpdesk-max-zindex);
+    top: 50%; /* Para centralizar verticalmente */
+    right: 0;
+    transform: translateY(-50%); /* Ajusta o container para ficar centralizado */
+    display: flex;
+    flex-direction: row; /* Organiza o botão e o conteúdo horizontalmente */
+    align-items: center;
+    justify-content: flex-start;
+    width: 50px; /* Inicialmente só mostra o botão */
+    height: 70vh; /* 70% da altura da viewport */
+    transition: all 0.4s ease; /* Transição suave */
+    overflow: hidden; /* Para esconder o conteúdo até a janela ser aberta */
+}
+
+#desk-container-toggle-button {
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: greenyellow;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    border: none;
+    z-index: 99999999;
+}
+
+#desk-container.open {
+    width: 483px; /* 433px + 50px de largura do botão */
+}
+
+.desk-container-body { 
+    display: none; /* Inicialmente escondido */
+    flex: 1;
+    height: 100%;
+    background-color: white; /* Fundo branco para contraste */
+    z-index: 15;
+    border-radius: 10px;
+}
+
+/* Aplicando unicamente no bodyContainer, desconsiderando o botao */
+#desk-container.open .desk-container-body {
+    display: flex; /* Mostra o conteúdo ao abrir a janela */
+    flex-direction: column;
+}
+
+.top-area-header{
+    padding-top: 10px;
+    padding-left: 14px ;
+    padding-right: 10px;
+    background-color: #F4F7FB;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.button-header-container{
+    border-radius: 9999px;
+    background-color: #D8DFE7;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-header-container img{
+    height: 16px;
+    width: 16px;
+}
+
+
+.linkUser{
+    background-color: #D8DFE7;
+    border-radius: 20px;
+}
+
+.linkUser a{
+    padding: 10px;
+    color: #4B5056;
+}
+
+.bottom-area-header{
+    background-color: #F4F7FB;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+}
+
+.text-bottom-area-header{
+    padding-bottom: 5px;
+    border-bottom: 2px solid #005A04
+}
+
+#content-body-container{
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-left: 14px ;
+    margin-right: 11px;
+}
+
+#content-body-container.closed{
+    display: none
+}
+
+
+
+#content-body-container-template{
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-left: 14px ;
+    margin-right: 11px;
+}
+
+#content-body-container-template.closed{
+    display: none;
+    
+}
+
+.trigger-input{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #d8dfe7;
+    border-radius: 8px;
+    color: rgb(75, 80, 86);
+    padding: 0px 4px 0px 4px;
+}
+
+.trigger-input div{
+    font-size: 10px;
+    font-weight: 700;
+    color: rgb(75, 80, 86)
+}
+
+.trigger-input input{
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0 10px;
+}
+
+
+.full-text-trigger {
+    overflow-y: auto; /* Habilita a rolagem vertical */
+    margin-top: 5px;
+    height: 400px; /* Altura fixa */
+    border: 1px solid #d8dfe7;
+    border-radius: 8px;
+    color: rgb(75, 80, 86);
+    padding: 2px 4px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.searchbox-body-container{
+    display: flex;
+    align-items: center;
+    height: 40px;
+    border: 1px solid #D8DFE7;
+    background: #FFF;
+    border-radius: 10px;
+    padding: 0 5px;
+}
+
+.searchbox-body-container input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0 10px;
+  }
+
+  .svgLupa{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 38px;
+  }
+
+  .svgLupa img {
+    height: 16px; 
+    width: 16px;  
+}
+
+.templateToggler{
+    margin-top: 8px;
+    padding-right: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.templateCounter{
+    color: #6F747C;
+    font-size: 12px;
+}
+
+.arrowKeyTemplate{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 102, 255, 0);
+    width: 26px;
+    height: 26px;
+    border-radius: 10px;
+    color: #6F747C;
+    font-size: 12px;
+}
+
+.arrowKeyTemplate:hover{
+    background-color: #ACC1FF;
+    font-weight: 700;
+}
+
+.arrowKeyTemplate img{
+    width: 16px;
+    height: 16px;
+}
+
+.templates_expanded{
+    position: relative;
+    display: flex;
+    flex-direction: column; /* Para garantir que a lista ocupe toda a coluna */
+    max-height: 400px; /* Defina uma altura máxima para que o scroll funcione */
+    overflow-y: auto; /* Habilita o scroll vertical */
+    overflow-x: hidden; /* Habilita o scroll vertical */
+    padding-right: 10px; /* Opcional: Para espaçamento entre o scroll e o conteúdo */
+    transition: all ease 0.5s;
+}
+
+
+.templates_closed{
+    /* right: -999px; */
+}
+
+
+.templates_list{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    max-width: 381px;
+    text-overflow: ellipsis;
+    
+}
+
+.template_item{
+    color: rgb(34, 37, 40);
+    margin-top: 6px;
+    margin-bottom: 6px;
+    padding-top: 4px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(233, 238, 244);
+    border: 1px solid;
+    border-color: rgb(216, 223, 231);
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    height: 52px;
+    border-radius: 5px;
+}
+
+.template_item:hover{
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.list-full-title{
+    padding-left: 5px;
+    padding-bottom: 3px;
+    color: rgb(34, 37, 40);
+    font-size: 14px;
+}
+
+.list-full-title:hover{
+    font-weight: 700;
+}
+
+.list-subtitle{
+    max-width: 380px;
+    padding-left: 5px;
+    color: rgb(75, 80, 86);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.footer-body-container{
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 16px;
+    color: #4B5056;
+    font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', sans-serif;
+    font-weight: 600;
+}
+
+.shortcut-box{
+    overflow-y: auto;
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    display: none;
+    height: 400px;
+    width: 350px;
+    border: 1px solid rgb(77, 74, 74);
+    background-color: gainsboro;
+    border-radius: 10px;
+    z-index: var(--helpdesk-max-zindex);
+}
+
+
+.shortcut_item{
+    color: rgb(34, 37, 40);
+    padding-left: 4px;
+    margin-top: 1px;
+    margin-bottom: 3px;
+    padding-top: 4px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(233, 238, 244);
+    border-color: rgb(216, 223, 231);
+    text-overflow: ellipsis;
+    text-wrap: wrap;
+    height: 52px;
+    border-radius: 5px;
+}
+
+.shortcut_item:hover{
+    background-color: #ACC1FF;
+    cursor: pointer;
+}
+
+.shortcut-title{
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.shortcut-description{
+    font-size: 9px;
+    font-weight: 400;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limita o texto a 2 linhas */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* Permite a quebra de linha */
+}
+
+
+.hiddenShortcutBox{
+    display: none;
+}
+
+.showedShortcutBox{
+    display: block;
+}
+
+
+
