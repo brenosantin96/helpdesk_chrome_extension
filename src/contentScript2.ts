@@ -1,7 +1,5 @@
 import { getCaretPositionXY2, observeElement, textToHtmlParagraph } from './utils';
 
-console.log("EXECUTANDO O CONTENT SCRIPT .TS")
-
 type helpText = {
     id: number;
     shortcut: string;

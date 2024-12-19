@@ -1,3 +1,28 @@
-.footer-body-container{
-    background-color: red;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.iframe_extension {
+  position: fixed;
+  z-index: 10001;
+  top: 50%; /* to align vertically */
+  right: 0;
+  transform: translateY(-50%); /* adjusting cointainer to be centralized */
+  display: flex;
+  flex-direction: row; /* putting button and content horizontally */
+  align-items: center;
+  justify-content: flex-start;
+  width: 50px; /* initially it will only display button */
+  height: 70vh; /* 70% viewport height */
+  border: none;
+  transition: all 0.4s ease; /* ease transition */
+  overflow: hidden; /* To hide content window until is opened */
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.iframe_extension.open {
+  width: 483px; /* 433px + 50px width button */
 }
