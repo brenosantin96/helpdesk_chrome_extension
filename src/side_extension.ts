@@ -316,6 +316,20 @@ function updateHelpTexts(filteredHelpTexts: helpText[]) {
     });
 }
 
+// Listen for messages from the parent
+window.addEventListener("message", (event) => {
+    if (event.data.action === "activeElementChanged") {
+        if(event.data){ //only reads if effectively has an activeElement
+            const { tagName, value } = event.data;
+            console.log("Active element in parent changed:", { tagName, value });
+        }
+
+        // Perform any actions needed with the updated active element info
+    }
+});
+
+//preciso pegar o elemento que esta selecionado na tela, verificar se é um div content editable, input, etc e criar um NOVO iframe onde gestionar os shortcuts.
+
 
 
 /* 
