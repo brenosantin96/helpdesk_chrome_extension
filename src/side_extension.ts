@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const deskContainer = document.getElementById("desk-container");
     const deskContainerBody = document.querySelector(".desk-container-body");
     const toggleButton = document.getElementById("desk-container-toggle-button");
-    
+
     //validators
     let isOpenedArrowKeyTemplateButton = false;
 
@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
             imageElementArrowKey.src = chrome.runtime.getURL("images/left-arrow-key.png");
             templatesList.style.transition = "all ease 0.3s"
             templatesList.style.right = "27px"
-            
+
         } else {
             //here it is closed, then it will make a click to open
             isOpenedArrowKeyTemplateButton = true;
@@ -319,16 +319,25 @@ function updateHelpTexts(filteredHelpTexts: helpText[]) {
 // Listen for messages from the parent
 window.addEventListener("message", (event) => {
     if (event.data.action === "activeElementChanged") {
-        if(event.data){ //only reads if effectively has an activeElement
-            const { tagName, value } = event.data;
-            console.log("Active element in parent changed:", { tagName, value });
+        if (event.data) { //only reads if effectively has an activeElement
+            const { tagName, value, action, iframePath } = event.data;
+            console.log("Active element in parent changed:", { tagName, value, action, iframePath });
         }
 
         // Perform any actions needed with the updated active element info
     }
 });
 
-//preciso pegar o elemento que esta selecionado na tela, verificar se é um div content editable, input, etc e criar um NOVO iframe onde gestionar os shortcuts.
+
+// Listen for messages from the parent
+window.addEventListener("message", (event) => {
+    if (event.data.action === "init") {
+        console.log("EVENT DATA INITIALIZATION: ", event.data);
+    }
+
+    // Perform any actions needed with the updated active element info
+});
+
 
 
 
